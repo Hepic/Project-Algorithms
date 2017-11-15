@@ -30,4 +30,9 @@
 *.exe
 *.out
 *.app
+
+# Others
 run
+trajectories_dataset
+.*.swp
+*.txt
