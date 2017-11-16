@@ -3,6 +3,6 @@
 
 char *get_arguments(const char *[], int, const char*);
 void perror_exit(const char*);
-double uniform_distribution(int, int);
+double uniform_distribution(double, double);
 
 #endif
