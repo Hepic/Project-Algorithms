@@ -22,8 +22,8 @@ class Curve {
         int get_length() const;
         string get_id() const;
         double get_coord_point(int, int) const;
-        vector<double> get_point(int) const;
-        vector<double> get_last_point() const;
+        const vector<double>& get_point(int) const;
+        const vector<double>& get_last_point() const;
         vector<double> get_convert_vector() const;
         bool is_empty() const;
         void print_curve() const;
