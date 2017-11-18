@@ -41,11 +41,11 @@ double Curve::get_coord_point(int coord, int pnt) const {
     return curve[pnt][coord];
 }
 
-vector<double> Curve::get_point(int pnt) const {
+const vector<double>& Curve::get_point(int pnt) const {
     return curve[pnt];
 }
 
-vector<double> Curve::get_last_point() const {
+const vector<double>& Curve::get_last_point() const {
     return curve.back();
 }
 

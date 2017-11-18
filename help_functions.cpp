@@ -19,7 +19,7 @@ void perror_exit(const char *msg) {
     exit(EXIT_FAILURE);
 }
 
-double uniform_distribution(int A, int B) {
+double uniform_distribution(double A, double B) {
     double zero_to_one = (double)rand() / ((double)RAND_MAX + 1.0);
     double ret = A + zero_to_one * (B - A);
 

@@ -27,6 +27,8 @@ void read_file(const char *file_name, int &dim) {
         id = str;
     }
 
+    point.resize(dim);
+
     while (1) {
         if (!read_id) {
             file >> id;
@@ -42,11 +44,8 @@ void read_file(const char *file_name, int &dim) {
         Curve curve(id, dim);
 
 	    for (int i = 0; i < num_points; i++) {
-            point.clear();
-
             for(int j = 0; j < dim; ++j) {
-                file >> chr >> val;
-                point.push_back(val);
+                file >> chr >> point[j];
             }
             
             file >> chr;
