@@ -91,9 +91,9 @@ vector<int> loyd_assignment(vector<int> centroids) {
     double minim, dist;
     int num_curve;
     
-    for (int i = 0; i < input_curves.size(); ++i) {
+    for (int i = 0; i < (int)input_curves.size(); ++i) {
         minim = -1;
-        for (int j=0; j < centroids.size(); ++j) {
+        for (int j=0; j < (int)centroids.size(); ++j) {
             if (centroids[j] == i) {
                 continue;
             }
