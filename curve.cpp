@@ -52,8 +52,8 @@ const vector<double>& Curve::get_last_point() const {
 vector<double> Curve::get_convert_vector() const {
     vector<double> gen_vector;
     
-    for (int i = 0; i < curve.size(); ++i) {
-        for (int j = 0; j < curve[i].size(); ++j) {
+    for (int i = 0; i < (int)curve.size(); ++i) {
+        for (int j = 0; j < (int)curve[i].size(); ++j) {
             gen_vector.push_back(curve[i][j]);
         }
     }
@@ -68,10 +68,10 @@ bool Curve::is_empty() const {
 void Curve::print_curve() const {
     cout << "Id: " << id << endl;
 
-    for (int i = 0; i < curve.size(); ++i) {
+    for (int i = 0; i < (int)curve.size(); ++i) {
         cout << "Point " << i << ": ";
 
-        for (int j = 0; j < curve[i].size(); ++j) {
+        for (int j = 0; j < (int)curve[i].size(); ++j) {
             cout << curve[i][j] << " ";
         }
 
@@ -91,8 +91,8 @@ void Curve::append_curve(const Curve &new_curve) {
 }
 
 bool Curve::equal_curves(const Curve &curve_1) const {
-    if (curve.size() == curve_1.get_length()) {
-        for (int i = 0; i < curve.size(); ++i) {
+    if ((int)curve.size() == curve_1.get_length()) {
+        for (int i = 0; i < (int)curve.size(); ++i) {
             if (curve[i] != curve_1.get_point(i)) {
                 return false;
             }

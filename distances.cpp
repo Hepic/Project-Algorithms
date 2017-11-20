@@ -7,7 +7,7 @@
 double euclidean_distance_square(const vector<double> &pnt_1, const vector<double> &pnt_2) {
     double dist = 0;
 
-    for (int i = 0; i < pnt_1.size(); ++i) {
+    for (int i = 0; i < (int)pnt_1.size(); ++i) {
         dist += (pnt_1[i] - pnt_2[i]) * (pnt_1[i] - pnt_2[i]);   
     }
 

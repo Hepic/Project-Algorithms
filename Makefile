@@ -1,13 +1,13 @@
 CC = g++
-FLAGS = -g -c
+FLAGS = -g -Wall
 OUT = run
 OBJS = main.o file_functions.o curve.o help_functions.o cluster.o distances.o
 
 run: $(OBJS)
-	$(CC) -g $(OBJS) -o $(OUT)
+	$(CC) $(FLAGS) $^ -o $(OUT)
 
 %.o: %.cpp %.h
-	$(CC) $(FLAGS) $< -o $@
+	$(CC) $(FLAGS) -c $< -o $@
 
 clean:
 	rm -f $(OBJS) $(OUT) 

@@ -13,7 +13,6 @@ void read_file(const char *file_name, int &dim) {
     vector<double> point;
     ifstream file(file_name);
     string str, id;
-    double val;
     int num_points;
     char chr;
     bool read_id = false;
