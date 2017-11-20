@@ -21,6 +21,12 @@ int main(int argc, const char *argv[]) {
         cout << ret[i] << endl;
     }    
     
+    vector<int> assignment = loyd_assignment(ret);
+    
+    for (int i = 0; i < 20; ++i) {
+        cout << assignment[i] << endl;
+    }
+    
     clock_t end = clock();
     double elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
     
