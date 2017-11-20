@@ -86,26 +86,29 @@ vector<int> k_means_pp(int len, int k, const char *dist_func) {
     return centroids;
 }
 
-vector<int> loyd_assignment(vector<int> centroids) {
+vector<int> loyd_assignment(const vector<int>& centroids) {
     vector<int> assignment(input_curves.size());
     double minim, dist;
-    int num_curve;
+    int pos_curve;
     
     for (int i = 0; i < (int)input_curves.size(); ++i) {
         minim = -1;
-        for (int j=0; j < (int)centroids.size(); ++j) {
-            if (centroids[j] == i) {
-                continue;
+        
+        for (int j = 0; j < (int)centroids.size(); ++j) {
+            if (i == centroids[j]) {
+                pos_curve = centroids[j];
+                break;
             }
-            dist = compute_distance(input_curves[i], input_curves[centroids[j]],"DFT");
+            
+            dist = compute_distance(input_curves[i], input_curves[centroids[j]], "DFT");
             
             if (minim == -1 || dist < minim) {
                 minim = dist;
-                num_curve = centroids[j];
+                pos_curve = centroids[j];
             }
         }
         
-        assignment[i] = num_curve;
+        assignment[i] = pos_curve;
     }
     
     return assignment;

@@ -13,18 +13,19 @@ int main(int argc, const char *argv[]) {
     clock_t begin = clock();
     
     int dim = 2;
-    read_file("trajectories_dataset", dim);
+    read_file("test.txt", dim);
     
-    vector<int> ret = k_means_pp(input_curves.size(), 3, "DFT");
+    vector<int> ret = k_means_pp(input_curves.size(), 2, "DFT");
     
     for (int i = 0; i < ret.size(); ++i) {
-        cout << ret[i] << endl;
+        cout << ret[i] << " ";
     }    
     
+    cout << endl;
     vector<int> assignment = loyd_assignment(ret);
     
-    for (int i = 0; i < 20; ++i) {
-        cout << assignment[i] << endl;
+    for (int i = 0; i < input_curves.size(); ++i) {
+        cout << assignment[i] << " ";
     }
     
     clock_t end = clock();
