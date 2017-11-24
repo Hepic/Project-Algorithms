@@ -6,10 +6,10 @@
 class List {
     class Node {
         public:
-            int val;
+            Curve curve, grid_curve;
             Node *next;
 
-            Node(int val);
+            Node(const Curve&, const Curve&);
     };
 
     Node *head, *tail;
@@ -17,8 +17,9 @@ class List {
     public:
         List();
         ~List();
-        void insert(int val);
+        void insert(const Curve&, const Curve&);
         void print_list() const;
+        void search(vector<Curve>&, const Curve&, const Curve&, const char*, const char*, double, vector<bool>&, bool = true) const;
 };
 
 #endif
