@@ -15,19 +15,9 @@ int main(int argc, const char *argv[]) {
     int dim = 2;
     read_file("test.txt", dim);
     
-    vector<int> ret = k_means_pp(input_curves.size(), 2, "DFT");
-    
-    for (int i = 0; i < ret.size(); ++i) {
-        cout << ret[i] << " ";
-    }    
-    
-    cout << endl;
-    vector<int> assignment = loyd_assignment(ret);
-    
-    for (int i = 0; i < input_curves.size(); ++i) {
-        cout << assignment[i] << " ";
-    }
-    
+    vector<int> centroids = k_means_pp(input_curves.size(), 2, "DFT");
+    clustering(centroids);
+
     clock_t end = clock();
     double elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
     

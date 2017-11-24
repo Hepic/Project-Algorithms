@@ -6,6 +6,9 @@ OBJS = main.o file_functions.o curve.o help_functions.o cluster.o distances.o
 run: $(OBJS)
 	$(CC) $(FLAGS) $^ -o $(OUT)
 
+main.o: main.cpp
+	$(CC) $(FLAGS) -c $< -o $@
+
 %.o: %.cpp %.h
 	$(CC) $(FLAGS) -c $< -o $@
 
