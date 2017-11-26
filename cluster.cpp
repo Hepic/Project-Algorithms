@@ -202,11 +202,14 @@ double mean_frechet(vector<Curve> &centroids, const vector<int> &assign) {
     return 0;
 }
 
-void clustering(vector<int> &centroids) {
+void clustering() {
     vector<int> assignment(input_curves.size());
     vector<double> close_dist(input_curves.size()), close_dist_sec(input_curves.size());
     bool check;
     double value;
+    
+    vector<int> centroids = k_means_pp(input_curves.size(), 2, "DFT");
+    cout << "initialization ended" << endl;
     
     do {
         value = loyd_assignment(centroids, assignment, close_dist, close_dist_sec);
