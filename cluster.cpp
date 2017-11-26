@@ -86,9 +86,9 @@ vector<int> k_means_pp(int len, int k, const char *dist_func) {
     return centroids;
 }
 
-double loyd_assignment(const vector<int>& centroids, vector<int> &assignment, vector<int> &assignment_second) {
+double loyd_assignment(const vector<int>& centroids, vector<int> &assign, vector<double> &close_dist, vector<double> &close_dist_sec) {
     double min_dist, min_dist_sec, dist, value = 0;
-    int centr, centr_sec;
+    int centr;
     
     for (int i = 0; i < (int)input_curves.size(); ++i) {
         min_dist = -1;
@@ -98,18 +98,16 @@ double loyd_assignment(const vector<int>& centroids, vector<int> &assignment, ve
 
             if (min_dist == -1 || dist < min_dist) {
                 min_dist_sec = min_dist;
-                centr_sec = centr;
-            
                 min_dist = dist;
                 centr = centroids[j];
             } else if (min_dist_sec == -1 || dist < min_dist_sec) {
                 min_dist_sec = dist;
-                centr_sec = centroids[j];
             }
         }
 
-        assignment[i] = centr;
-        assignment_second[i] = centr_sec;
+        assign[i] = centr;
+        close_dist[i] = min_dist;
+        close_dist_sec[i] = min_dist_sec;
 
         value += min_dist;
     }
@@ -117,38 +115,27 @@ double loyd_assignment(const vector<int>& centroids, vector<int> &assignment, ve
     return value;
 }
 
-double swap_update_centroid(int old_centr, int new_centr, double value, const vector<int> &assignment, const vector<int> &assignment_second) {
-    for (int i = 0; i < (int)assignment.size(); ++i) {
-        if (i != old_centr && (assignment[i] == i)) {
+double swap_update_centroid(int old_centr, int new_centr, double value, const vector<int> &assign, const vector<double> close_dist, const vector<double> close_dist_sec) {
+    for (int i = 0; i < (int)assign.size(); ++i) {
+        if (i != old_centr && (assign[i] == i)) {
             continue;
         }
         
-        if (assignment[i] != old_centr) {
-            double dist_1 = compute_distance(input_curves[i], input_curves[new_centr], "DFT");
-            double dist_2 = compute_distance(input_curves[i], input_curves[assignment[i]], "DFT");
-
-            if (dist_1 < dist_2) {
-                value += (dist_1 - dist_2);
-            }
+        double dist = compute_distance(input_curves[i], input_curves[new_centr], "DFT");
+        
+        if (assign[i] != old_centr) {
+            value += min(dist - close_dist[i], 0.0);
         } else {
-            double dist_1 = compute_distance(input_curves[i], input_curves[new_centr], "DFT");
-            double dist_2 = compute_distance(input_curves[i], input_curves[assignment_second[i]], "DFT"); 
-            double dist_3 = compute_distance(input_curves[i], input_curves[assignment[i]], "DFT");                    
-            
-            if (dist_1 < dist_2) {
-                value += (dist_1 - dist_3);
-            } else {
-                value += (dist_2 - dist_3);
-            }
+            value += min(dist, close_dist_sec[i]) - close_dist[i];
         }
     }
 
     return value;
 }
 
-double PAM_update(const vector<int> &centroids, const vector<int> &assign, const vector<int> &assign_sec, double value, int &p_old_cent, int &new_cent) {
+bool PAM_update(vector<int> &centroids, const vector<int> &assign, const vector<double> &close_dist, const vector<double> &close_dist_sec, double value) {
     double min_value = value; 
-    p_old_cent = new_cent = -1;
+    int pos_old_cent = -1, new_cent = -1;
 
     for (int i = 0; i < (int)centroids.size(); ++i) {
         for (int j = 0; j < (int)assign.size(); ++j) {
@@ -156,35 +143,78 @@ double PAM_update(const vector<int> &centroids, const vector<int> &assign, const
                 continue;
             }
             
-            double new_value = swap_update_centroid(centroids[i], j, value, assign, assign_sec); 
+            double new_value = swap_update_centroid(centroids[i], j, value, assign, close_dist, close_dist_sec); 
 
             if (new_value < min_value) {
                 min_value = new_value;
-                p_old_cent = i;
+                pos_old_cent = i;
                 new_cent = j;
             }
         }
     }
 
-    return min_value;
+    if (value > min_value) {
+        centroids[pos_old_cent] = new_cent;
+        return true;
+    }
+
+    return false;
+}
+
+Curve mean_curve_cluster(const vector<int> &cluster) {
+    int len = cluster.size();
+    vector<Curve> curves(len);
+
+    for (int i = 0; i < len; ++i) {
+        curves[i] = input_curves[cluster[i]];
+    }
+
+    while(len) {
+        Curve mean_curve;
+        int pos = 0;
+
+        for (int i = 1; i < len; i += 2) {
+            discrete_frechet_distance(curves[i - 1], curves[i], mean_curve, true);
+            curves[pos++] = mean_curve;
+        }
+
+        if (len & 1) {
+            curves[pos++] = curves[len - 1];
+        }
+
+        len >>= 1;
+    }
+
+    return curves[0];
+}
+
+double mean_frechet(vector<Curve> &centroids, const vector<int> &assign) {
+    vector<vector<int> > clusters(centroids.size());
+
+    for (int i = 0; i < (int)assign.size(); ++i) {
+        clusters[assign[i]].push_back(i);
+    }
+    
+    for (int i = 0; i < (int)centroids.size(); ++i) {
+        centroids[i] = mean_curve_cluster(clusters[i]);
+    }
+    
+    return 0;
 }
 
 void clustering(vector<int> &centroids) {
-    vector<int> assignment(input_curves.size()), assignment_second(input_curves.size());
-    int pos_old_centr, new_centr;
-
-    while (1) {
-        double value = loyd_assignment(centroids, assignment, assignment_second);
-        double new_value = PAM_update(centroids, assignment, assignment_second, value, pos_old_centr, new_centr);    
-
-        if (value > new_value) {
-            centroids[pos_old_centr] = new_centr; 
-        } else {
-            cout << value << endl;
-            break;
-        }
-    }
+    vector<int> assignment(input_curves.size());
+    vector<double> close_dist(input_curves.size()), close_dist_sec(input_curves.size());
+    bool check;
+    double value;
+    
+    do {
+        value = loyd_assignment(centroids, assignment, close_dist, close_dist_sec);
+        check = PAM_update(centroids, assignment, close_dist, close_dist_sec, value);  
+    } while(check);
    
+    cout << value << endl;
+
     for (int i = 0; i < (int)input_curves.size(); ++i) {
         cout << assignment[i] << " ";
     }

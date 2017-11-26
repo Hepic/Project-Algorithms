@@ -15,9 +15,11 @@ int main(int argc, const char *argv[]) {
     int dim = 2;
     read_file("test.txt", dim);
     
+    cout << "read ended" << endl;
     vector<int> centroids = k_means_pp(input_curves.size(), 2, "DFT");
+    cout << "initialization ended" << endl;
     clustering(centroids);
-
+    
     clock_t end = clock();
     double elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
     
