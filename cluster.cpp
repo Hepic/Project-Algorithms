@@ -49,7 +49,7 @@ vector<int> k_means_pp(int len, int k, const char *dist_func) {
                 continue;
             }
 
-            double dist = compute_distance(input_curves[i], input_curves[pos], dist_func);
+            double dist = compute_distance(i, pos, dist_func);
  
             if (min_distance[i] == -1 || dist < min_distance[i]) {
                 if (min_distance[i] != -1) {
@@ -94,7 +94,7 @@ double loyd_assignment(const vector<int>& centroids, vector<int> &assign, vector
         min_dist = -1;
         
         for (int j = 0; j < (int)centroids.size(); ++j) {
-            dist = compute_distance(input_curves[i], input_curves[centroids[j]], "DFT");
+            dist = compute_distance(i, centroids[j], "DFT");
 
             if (min_dist == -1 || dist < min_dist) {
                 min_dist_sec = min_dist;
@@ -121,7 +121,7 @@ double swap_update_centroid(int old_centr, int new_centr, double value, const ve
             continue;
         }
         
-        double dist = compute_distance(input_curves[i], input_curves[new_centr], "DFT");
+        double dist = compute_distance(i, new_centr, "DFT");
         
         if (assign[i] != old_centr) {
             value += min(dist - close_dist[i], 0.0);
