@@ -4,6 +4,7 @@
 #include "curve.h"
 #include "distances.h"
 #include "help_functions.h"
+#include "binary_mean_tree.h"
 
 vector<int> k_random_selection(int len, int k) {
     vector<int> all_random_points(len);
@@ -23,13 +24,13 @@ vector<int> k_random_selection(int len, int k) {
     return pick_random_points;
 }
 
-vector<int> k_means_pp(int len, int k, const char *dist_func) {
-    vector<int> centroids;
+void k_means_pp(vector<int> &centroids_ind, vector<const Curve*> &centroids, int len, int k, const char *dist_func) {
     vector<double> min_distance(len, -1);
     vector<bool> is_centroid(len, false);
     int pos;
     double max_sum = 0;
 
+    centroids_ind.reserve(k);
     centroids.reserve(k);
 
     for (int t = 0; ; ++t) {
@@ -37,7 +38,8 @@ vector<int> k_means_pp(int len, int k, const char *dist_func) {
             pos = rand() % len;
 
             is_centroid[pos] = true; 
-            centroids.push_back(pos);
+            centroids_ind.push_back(pos);
+            centroids.push_back(&input_curves[pos]);
         }
         
         if (t == k - 1) {
@@ -166,45 +168,11 @@ bool PAM_update(vector<int> &centroids, const vector<int> &assign, const vector<
     return false;
 }
 
-Curve mean_curve_cluster(const vector<int> &cluster) {
-    int len = cluster.size();
-    vector<Curve> curves(len);
-
-    for (int i = 0; i < len; ++i) {
-        curves[i] = input_curves[cluster[i]];
+void mean_frechet_update(const vector<vector<int> > &clusters) {
+    for (int i = 0; i < (int)clusters.size(); ++i) {
+        BinaryMeanTree tree(clusters[i]); 
+        tree.get_mean().print_curve();
     }
-
-    while(len) {
-        Curve mean_curve;
-        int pos = 0;
-
-        for (int i = 1; i < len; i += 2) {
-            discrete_frechet_distance(curves[i - 1], curves[i], mean_curve, true);
-            curves[pos++] = mean_curve;
-        }
-
-        if (len & 1) {
-            curves[pos++] = curves[len - 1];
-        }
-
-        len >>= 1;
-    }
-
-    return curves[0];
-}
-
-double mean_frechet(vector<Curve> &centroids, const vector<int> &assign) {
-    vector<vector<int> > clusters(centroids.size());
-
-    for (int i = 0; i < (int)assign.size(); ++i) {
-        clusters[assign[i]].push_back(i);
-    }
-    
-    for (int i = 0; i < (int)centroids.size(); ++i) {
-        centroids[i] = mean_curve_cluster(clusters[i]);
-    }
-    
-    return 0;
 }
 
 void clustering() {
@@ -217,11 +185,7 @@ void clustering() {
         vector<int> centroids = k_means_pp(input_curves.size(), num_of_clusters, "DFT");
         cout << "initialization ended" << endl;
         
-        vector<double> dissimilarity;
-        vector<vector<int> > clusters;
-
-        clusters.resize(num_of_clusters + 5);
-        dissimilarity.resize(num_of_clusters + 5);
+        vector<vector<int> > clusters(num_of_clusters + 5);
 
         do {
             for (int i = 0; i < num_of_clusters; ++i) {
@@ -229,17 +193,17 @@ void clustering() {
                 check = PAM_update(centroids, assignment, close_dist, close_dist_sec, value, clusters[i], i); 
             }
         } while(check);
-        
+
         double min_s = -1, max_s = -1;
-        
+
         for (int i = 0; i < num_of_clusters; ++i) {
             double diss_a = 0, diss_b = 0;
-            
+
             for (int j = 0; j < (int)clusters[i].size(); ++j) {
                 diss_a += close_dist[clusters[i][j]];
                 diss_b += close_dist_sec[clusters[i][j]];
             }
-            
+
             double res = (diss_b - diss_a) / max(diss_a, diss_b);
             min_s = (min_s == -1 ? res : min(min_s, res));
             max_s = (max_s == -1 ? res : max(max_s, res));
@@ -249,9 +213,9 @@ void clustering() {
             cout << "k = " << num_of_clusters << endl;
             break;
         }
-    } 
+    }
     
-    cout << value << endl;
+    cout << "value = " << value << endl;
 
     for (int i = 0; i < (int)input_curves.size(); ++i) {
         cout << assignment[i] << " ";
