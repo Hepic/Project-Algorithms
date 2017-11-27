@@ -86,10 +86,14 @@ vector<int> k_means_pp(int len, int k, const char *dist_func) {
     return centroids;
 }
 
-double loyd_assignment(const vector<int>& centroids, vector<int> &assign, vector<double> &close_dist, vector<double> &close_dist_sec) {
+double loyd_assignment(const vector<int>& centroids, vector<int> &assign, vector<double> &close_dist, vector<double> &close_dist_sec, vector<vector<int> > &clusters) {
     double min_dist, min_dist_sec, dist, value = 0;
-    int centr;
+    int p_centr;
     
+    for (int i = 0; i < (int)clusters.size(); ++i) {
+        clusters[i].clear();
+    }
+
     for (int i = 0; i < (int)input_curves.size(); ++i) {
         min_dist = -1;
         
@@ -99,13 +103,15 @@ double loyd_assignment(const vector<int>& centroids, vector<int> &assign, vector
             if (min_dist == -1 || dist < min_dist) {
                 min_dist_sec = min_dist;
                 min_dist = dist;
-                centr = centroids[j];
+                p_centr = j;
             } else if (min_dist_sec == -1 || dist < min_dist_sec) {
                 min_dist_sec = dist;
             }
         }
 
-        assign[i] = centr;
+        clusters[p_centr].push_back(i);
+        assign[i] = centroids[p_centr];
+
         close_dist[i] = min_dist;
         close_dist_sec[i] = min_dist_sec;
 
@@ -115,46 +121,45 @@ double loyd_assignment(const vector<int>& centroids, vector<int> &assign, vector
     return value;
 }
 
-double swap_update_centroid(int old_centr, int new_centr, double value, const vector<int> &assign, const vector<double> close_dist, const vector<double> close_dist_sec) {
+double swap_update_centroid(int old_centr, int new_centr, const vector<int> &assign, const vector<double> close_dist, const vector<double> close_dist_sec) {
+    double value = 0;
+
     for (int i = 0; i < (int)assign.size(); ++i) {
-        if (i != old_centr && (assign[i] == i)) {
+        if ((i != old_centr && (assign[i] == i)) || i == new_centr) {
             continue;
         }
         
         double dist = compute_distance(i, new_centr, "DFT");
         
         if (assign[i] != old_centr) {
-            value += min(dist - close_dist[i], 0.0);
+            value += min(dist, close_dist[i]);
         } else {
-            value += min(dist, close_dist_sec[i]) - close_dist[i];
+            value += min(dist, close_dist_sec[i]);
         }
     }
 
     return value;
 }
 
-bool PAM_update(vector<int> &centroids, const vector<int> &assign, const vector<double> &close_dist, const vector<double> &close_dist_sec, double value) {
+bool PAM_update(vector<int> &centroids, const vector<int> &assign, const vector<double> &close_dist, const vector<double> &close_dist_sec, double value, const vector<int> &cluster, int p_clust) {
     double min_value = value; 
-    int pos_old_cent = -1, new_cent = -1;
+    int new_cent = -1;
+    
+    for (int i = 0; i < (int)cluster.size(); ++i) {
+        if (cluster[i] == centroids[p_clust]) {
+            continue;
+        }
+        
+        double new_value = swap_update_centroid(centroids[p_clust], cluster[i], assign, close_dist, close_dist_sec); 
 
-    for (int i = 0; i < (int)centroids.size(); ++i) {
-        for (int j = 0; j < (int)assign.size(); ++j) {
-            if (centroids[i] == j || centroids[i] != assign[j]) {
-                continue;
-            }
-            
-            double new_value = swap_update_centroid(centroids[i], j, value, assign, close_dist, close_dist_sec); 
-
-            if (new_value < min_value) {
-                min_value = new_value;
-                pos_old_cent = i;
-                new_cent = j;
-            }
+        if (new_value < min_value) {
+            min_value = new_value;
+            new_cent = cluster[i];
         }
     }
 
     if (value > min_value) {
-        centroids[pos_old_cent] = new_cent;
+        centroids[p_clust] = new_cent;
         return true;
     }
 
@@ -208,19 +213,49 @@ void clustering() {
     bool check;
     double value;
     
-    vector<int> centroids = k_means_pp(input_curves.size(), 2, "DFT");
-    cout << "initialization ended" << endl;
+    for (int num_of_clusters = 2; num_of_clusters <= (int)input_curves.size(); ++num_of_clusters) {
+        vector<int> centroids = k_means_pp(input_curves.size(), num_of_clusters, "DFT");
+        cout << "initialization ended" << endl;
+        
+        vector<double> dissimilarity;
+        vector<vector<int> > clusters;
+
+        clusters.resize(num_of_clusters + 5);
+        dissimilarity.resize(num_of_clusters + 5);
+
+        do {
+            for (int i = 0; i < num_of_clusters; ++i) {
+                value = loyd_assignment(centroids, assignment, close_dist, close_dist_sec, clusters);
+                check = PAM_update(centroids, assignment, close_dist, close_dist_sec, value, clusters[i], i); 
+            }
+        } while(check);
+        
+        double min_s = -1, max_s = -1;
+        
+        for (int i = 0; i < num_of_clusters; ++i) {
+            double diss_a = 0, diss_b = 0;
+            
+            for (int j = 0; j < (int)clusters[i].size(); ++j) {
+                diss_a += close_dist[clusters[i][j]];
+                diss_b += close_dist_sec[clusters[i][j]];
+            }
+            
+            double res = (diss_b - diss_a) / max(diss_a, diss_b);
+            min_s = (min_s == -1 ? res : min(min_s, res));
+            max_s = (max_s == -1 ? res : max(max_s, res));
+        }
+        
+        if (max_s - min_s < 0.1) {
+            cout << "k = " << num_of_clusters << endl;
+            break;
+        }
+    } 
     
-    do {
-        value = loyd_assignment(centroids, assignment, close_dist, close_dist_sec);
-        check = PAM_update(centroids, assignment, close_dist, close_dist_sec, value);  
-    } while(check);
-   
     cout << value << endl;
 
     for (int i = 0; i < (int)input_curves.size(); ++i) {
         cout << assignment[i] << " ";
     }
-    
+
     cout << endl;
 }
