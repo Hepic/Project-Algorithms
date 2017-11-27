@@ -13,14 +13,13 @@ int main(int argc, const char *argv[]) {
     clock_t begin = clock();
     
     int dim = 2;
-    read_file("rand.txt", dim); 
-    cout << "read ended" << endl;
-    
+    read_file("test_1.txt", dim); 
+
     mem_distance = new double*[(int)input_curves.size()];
 
     for (int i = 0; i < (int)input_curves.size(); ++i) {
         mem_distance[i] = new double[(int)input_curves.size()];
-        
+
         for (int j = 0; j < (int)input_curves.size(); ++j) {
             mem_distance[i][j] = -1;
         }
