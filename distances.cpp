@@ -4,6 +4,8 @@
 #include <cmath>
 #include "distances.h"
 
+double **mem_distance;
+
 double euclidean_distance_square(const vector<double> &pnt_1, const vector<double> &pnt_2) {
     double dist = 0;
 
@@ -138,17 +140,21 @@ double dynamic_time_wrapping(const Curve &curve_1, const Curve &curve_2) {
         delete[] dp_solve[i];
     }
 
-    delete[] dp_solve;    
+    delete[] dp_solve;
     return result;
 }
 
-double compute_distance(const Curve &curve_1, const Curve &curve_2, const char *dist_function) {
-    double dist;
+double compute_distance(int p1, int p2, const char *dist_function) {
+    double &dist = mem_distance[p1][p2];;
     
+    if (dist != -1) {
+        return dist;
+    }
+
     if (!strcmp(dist_function, "DFT")) {
-        dist = discrete_frechet_distance(curve_1, curve_2);
+        dist = discrete_frechet_distance(input_curves[p1], input_curves[p2]);
     } else if (!strcmp(dist_function, "DTW")) {
-        dist = dynamic_time_wrapping(curve_1, curve_2);
+        dist = dynamic_time_wrapping(input_curves[p1], input_curves[p2]);
     }
     
     return dist;
