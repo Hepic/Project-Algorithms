@@ -9,11 +9,11 @@ using namespace std;
 int main(int argc, const char *argv[]) {
     ios::sync_with_stdio(false);
     srand(time(NULL));
-    
+
     clock_t begin = clock();
-    
+
     int dim = 2;
-    read_file("test_1.txt", dim); 
+    read_file("test.txt", dim); 
 
     mem_distance = new double*[(int)input_curves.size()];
 
@@ -25,7 +25,12 @@ int main(int argc, const char *argv[]) {
         }
     }
     
-    clustering();
+    vector<vector<int> > clusters(1);
+    clusters[0].push_back(0);
+    clusters[0].push_back(2);
+    
+    mean_frechet_update(clusters);
+    //clustering();
     
     clock_t end = clock();
     double elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;

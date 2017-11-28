@@ -123,16 +123,16 @@ double loyd_assignment(const vector<int>& centroids, vector<int> &assign, vector
     return value;
 }
 
-double swap_update_centroid(int old_centr, int new_centr, const vector<int> &assign, const vector<double> close_dist, const vector<double> close_dist_sec) {
+double swap_update_centroid(int old_centr, int new_centr, const vector<int> &assign, const vector<double> &close_dist, const vector<double> &close_dist_sec) {
     double value = 0;
 
     for (int i = 0; i < (int)assign.size(); ++i) {
         if ((i != old_centr && (assign[i] == i)) || i == new_centr) {
             continue;
         }
-        
+
         double dist = compute_distance(i, new_centr, "DFT");
-        
+
         if (assign[i] != old_centr) {
             value += min(dist, close_dist[i]);
         } else {
@@ -197,14 +197,17 @@ void clustering() {
         double min_s = -1, max_s = -1;
 
         for (int i = 0; i < num_of_clusters; ++i) {
-            double diss_a = 0, diss_b = 0;
+            double diss_a = 0, diss_b = 0, res = 0;
 
             for (int j = 0; j < (int)clusters[i].size(); ++j) {
                 diss_a += close_dist[clusters[i][j]];
                 diss_b += close_dist_sec[clusters[i][j]];
+                
+                double s_elem = (diss_b - diss_a) / max(diss_a, diss_b);
+                res += s_elem;
             }
-
-            double res = (diss_b - diss_a) / max(diss_a, diss_b);
+            
+            res /= clusters[i].size();
             min_s = (min_s == -1 ? res : min(min_s, res));
             max_s = (max_s == -1 ? res : max(max_s, res));
         }
