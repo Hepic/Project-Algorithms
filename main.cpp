@@ -24,14 +24,9 @@ int main(int argc, const char *argv[]) {
             mem_distance[i][j] = -1;
         }
     }
-    
-    vector<vector<int> > clusters(1);
-    clusters[0].push_back(0);
-    clusters[0].push_back(2);
-    
-    mean_frechet_update(clusters);
-    //clustering();
-    
+
+    clustering(); 
+
     clock_t end = clock();
     double elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
     
