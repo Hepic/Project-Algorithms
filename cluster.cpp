@@ -149,6 +149,70 @@ double loyd_assignment(const vector<const Curve*> &centroids, vector<vector<int>
     return value;
 }
 
+vector<int> range_search(const vector<int> &centroids_ind, int dim) {
+    vector<int> assignment((int)input_curves.size(), -1), prev_assignment((int)input_curves.size());
+    vector<vector<int> > R_closest_curves((int)centroids_ind.size());
+    vector<bool> grid_curves_found((int)centroids_ind.size(), false);
+    double minim = -1;
+    
+    for (int i = 0; i < (int)centroids_ind.size() - 1; ++i) {
+        for (int j = i + 1; j < (int)centroids_ind.size(); ++j) {
+            double dist = compute_distance(i, j, "DFT");
+            
+            if (minim == -1 || dist < minim) {
+                minim = dist;
+            }
+        }
+    }
+    
+    double R = (double)(minim / 2.0);
+    int id;
+    
+    while (1) {
+        general_search(hashtables, L, delta, k, R, "classic", "DFT", R_closest_curves, centroids_ind, grid_curves_found);
+        
+        for (int i = 0; i < R_closest_curves.size(); ++i) {
+            for (int j = 0; j < R_closest_curves[i].size(); ++j) {
+                id = stoi(R_closest_curves[i][j].get_id());
+                
+                if (assignment[id] == -1) {
+                    assignment[id] = centroids_ind[i];
+                } else {
+                    int dist_1 = compute_distance(R_closest_curves[i][j], i, "DFT");
+                    int dist_2 = compute_distance(R_closest_curves[i][j], assignment[id], "DFT"); 
+                    
+                    if (dist_1 < dist_2) {
+                        assignment[id] = centroids[id];
+                    }
+                }
+            }
+        }
+        
+        if (assignment == prev_assignment) {
+            break;
+
+        R *= 2;
+    }
+    
+    // assignment for long points
+    for (int i = 0; i < assignment.size(); ++i) {
+        if (assignment[i] == -1) {
+            double minim = -1;
+            
+            for (int j = 0; j < (int)centroids_ind.size(); ++j) {
+                dist = compute_distance(i, centroids_ind[j], "DFT");
+                
+                if (minim == -1 || dist < minim) {
+                    minim = dist;
+                    assignment[i] = centroids_ind[j];
+                }
+            }
+        }
+    }
+    
+    return assignment;
+}
+
 double swap_update_centroid(int old_centr, int new_centr, const vector<int> &assign, const vector<double> &close_dist, const vector<double> &close_dist_sec) {
     double value = 0;
 

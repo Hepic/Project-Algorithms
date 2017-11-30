@@ -18,6 +18,7 @@ class Curve {
         Curve(string, int, const vector<vector<double> >&);
         void set_id(string);
         void insert_point(const vector<double>&);
+        void clear_curve();
         int get_dimension() const;
         int get_length() const;
         string get_id() const;
