@@ -4,6 +4,8 @@
 #include <cmath>
 #include "distances.h"
 
+double **mem_distance;
+
 vector<double> find_closest_point(const vector<double> &curr_point, const vector<double> &lower_left_point, double delta) {
     int dim = curr_point.size();
     vector<double> closest_point;
@@ -84,10 +86,10 @@ double discrete_frechet_distance(const Curve &curve_1, const Curve &curve_2, Cur
         mean = mean_point(curve_1.get_point(p1), curve_2.get_point(p2));
         reverse_mean_traversal.insert_point(mean);
         
-        while (p1 && p2) {
-            if (dp_solve[p1 - 1][p2] < min(dp_solve[p1][p2 - 1], dp_solve[p1 - 1][p2 - 1])) {
+        while (p1 || p2) {
+            if (!p2 || (p1 && dp_solve[p1 - 1][p2] < min(dp_solve[p1][p2 - 1], dp_solve[p1 - 1][p2 - 1]))) {
                 mean = mean_point(curve_1.get_point(--p1), curve_2.get_point(p2));
-            } else if (dp_solve[p1][p2 - 1] < dp_solve[p1 - 1][p2 - 1]) {
+            } else if (!p1 || (p2 && dp_solve[p1][p2 - 1] < dp_solve[p1 - 1][p2 - 1])) {
                 mean = mean_point(curve_1.get_point(p1), curve_2.get_point(--p2));
             } else {
                 mean = mean_point(curve_1.get_point(--p1), curve_2.get_point(--p2));
@@ -95,6 +97,9 @@ double discrete_frechet_distance(const Curve &curve_1, const Curve &curve_2, Cur
             
             reverse_mean_traversal.insert_point(mean); 
         }
+        
+        mean = mean_point(curve_1.get_point(0), curve_2.get_point(0));
+        reverse_mean_traversal.insert_point(mean);
 
         for (int i = (int)reverse_mean_traversal.get_length() - 1; i >= 0; --i) {
             mean_traversal.insert_point(reverse_mean_traversal.get_point(i));
@@ -154,17 +159,21 @@ double dynamic_time_wrapping(const Curve &curve_1, const Curve &curve_2) {
         delete[] dp_solve[i];
     }
 
-    delete[] dp_solve;    
+    delete[] dp_solve;
     return result;
 }
 
-double compute_distance(const Curve &curve_1, const Curve &curve_2, const char *dist_function) {
-    double dist = 0.0;
+double compute_distance(int p1, int p2, const char *dist_function) {
+    double &dist = mem_distance[p1][p2];
     
+    if (dist != -1) {
+        return dist;
+    }
+
     if (!strcmp(dist_function, "DFT")) {
-        dist = discrete_frechet_distance(curve_1, curve_2);
+        dist = discrete_frechet_distance(input_curves[p1], input_curves[p2]);
     } else if (!strcmp(dist_function, "DTW")) {
-        dist = dynamic_time_wrapping(curve_1, curve_2);
+        dist = dynamic_time_wrapping(input_curves[p1], input_curves[p2]);
     }
     
     return dist;

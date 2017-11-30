@@ -9,15 +9,24 @@ using namespace std;
 int main(int argc, const char *argv[]) {
     ios::sync_with_stdio(false);
     srand(time(NULL));
-    
+
     clock_t begin = clock();
-    
+
     int dim = 2;
     read_file("test.txt", dim); 
-    cout << "read ended" << endl;
-    
-    clustering();
-    
+
+    mem_distance = new double*[(int)input_curves.size()];
+
+    for (int i = 0; i < (int)input_curves.size(); ++i) {
+        mem_distance[i] = new double[(int)input_curves.size()];
+
+        for (int j = 0; j < (int)input_curves.size(); ++j) {
+            mem_distance[i][j] = -1;
+        }
+    }
+
+    clustering(); 
+
     clock_t end = clock();
     double elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
     
