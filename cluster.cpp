@@ -87,7 +87,7 @@ void k_means_pp(vector<int> &centroids_ind, vector<const Curve*> &centroids, int
     }
 }
 
-double loyd_assignment(const vector<int>& centroids, vector<int> &assign, vector<double> &close_dist, vector<double> &close_dist_sec, vector<vector<int> > &clusters) {
+double loyd_assignment(const vector<int> &centroids, vector<int> &assign, vector<double> &close_dist, vector<double> &close_dist_sec, vector<vector<int> > &clusters) {
     double min_dist, min_dist_sec, dist, value = 0;
     int p_centr;
     
@@ -122,7 +122,7 @@ double loyd_assignment(const vector<int>& centroids, vector<int> &assign, vector
     return value;
 }
 
-double loyd_assignment(const vector<const Curve*>& centroids, vector<vector<int> > &clusters) {
+double loyd_assignment(const vector<const Curve*> &centroids, vector<vector<int> > &clusters) {
     double min_dist, dist, value = 0;
     int p_centr;
     
