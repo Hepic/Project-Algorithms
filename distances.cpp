@@ -6,9 +6,8 @@
 
 double **mem_distance;
 
-vector<double> find_closest_point(const vector<double> &curr_point, const vector<double> &lower_left_point, double delta) {
+void find_closest_point(vector<double> &closest_point, const vector<double> &curr_point, const vector<double> &lower_left_point, double delta) {
     int dim = curr_point.size();
-    vector<double> closest_point;
     
     for (int i = 0; i < dim; ++i) {
         double val = curr_point[i] - lower_left_point[i] * delta;
@@ -18,8 +17,6 @@ vector<double> find_closest_point(const vector<double> &curr_point, const vector
             ++closest_point.back();
         }
     }
-    
-    return closest_point;
 }
 
 double euclidean_distance_square(const vector<double> &pnt_1, const vector<double> &pnt_2) {

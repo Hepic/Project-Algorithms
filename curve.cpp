@@ -25,6 +25,10 @@ void Curve::insert_point(const vector<double> &point) {
     curve.push_back(point);
 }
 
+void Curve::clear_curve() {
+    curve.clear();
+}
+
 int Curve::get_dimension() const {
     return dim;
 }
@@ -82,11 +86,8 @@ void Curve::print_curve() const {
 }
 
 void Curve::append_curve(const Curve &new_curve) {
-    vector<double> temp;
-    
     for (int i = 0; i < new_curve.get_length(); ++i) {
-        temp = new_curve.get_point(i);
-        curve.push_back(temp);
+        curve.push_back(new_curve.get_point(i));
     }
 }
 

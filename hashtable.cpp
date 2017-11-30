@@ -36,15 +36,15 @@ long long HashTable::get_index(const Curve &curve, const char *hash_function) co
     vector<vector<double> > table_lines;
     int k_vec = 3;
     long long index;
-    
+
     if (!strcmp(hash_function, "classic")) {
         index = vector_hashing(vec) % len;
     } else if(!strcmp(hash_function, "probabilistic")) {
-        if (vec_line.size() <= id) { // build k_vec lines for that hashtable once
+        if ((int)vec_line.size() <= id) { // build k_vec lines for that hashtable once
             for (int i = 0; i < k_vec; ++i) {
                 line.clear();
 
-                for (int j = 0; j < vec.size(); ++j) {
+                for (int j = 0; j < (int)vec.size(); ++j) {
                     double val = normal_distribution(0, 1);
                     line.push_back(val);
                 }

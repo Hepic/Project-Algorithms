@@ -149,45 +149,15 @@ double loyd_assignment(const vector<const Curve*> &centroids, vector<vector<int>
     return value;
 }
 
-vector<int> range_search(const vector<int>& centroids, int dim) {
-    vector<int> assignment(input_curves.size(),0);
-    vector<int> prev_assignment(input_curves.size());
-    vector<Curve> search_curves(centroids.size());
-    vector<vector<Curve> > R_closest_curves(centroids.size());
-    vector<bool> grid_curves_found(search_curves.size(), false);
-    int table_size, max_points = 0, min_points = -1;
-    string choice;
-    double delta = 2.0, minim, dist;
-    int k = 2, L = 3;
-    int value;
+vector<int> range_search(const vector<int> &centroids_ind, int dim) {
+    vector<int> assignment((int)input_curves.size(), -1), prev_assignment((int)input_curves.size());
+    vector<vector<int> > R_closest_curves((int)centroids_ind.size());
+    vector<bool> grid_curves_found((int)centroids_ind.size(), false);
+    double minim = -1;
     
-    for (int i = 0; i < centroids.size(); ++i) {
-        search_curves.push_back(input_curves[centroids[i]]);
-    }
-    
-    for (int i = 0; i < input_curves.size(); ++i) {
-        value = input_curves[i].get_length();
-        max_points = max(max_points, value);
-        min_points = (min_points == -1 ? value : min(min_points, value));
-    }
-    
-    for (int i = 0; i < max_points * k * dim; ++i) {
-        vec_r.push_back(rand() % MAX_R);
-    }
-    
-    // Create L hashTables
-    table_size = (int)input_curves.size() / 4 + 1;
-    vector<HashTable> hashtables(L + 1, HashTable(table_size));
-    
-    for (int i = 0; i < L; ++i) {
-        hashtables[i].set_id(i);
-    }
-    
-    insert_curves_into_hashtables(hashtables, L, delta, k, "DFT"); // Insert input_curves into hashtables
-    
-    for (int i = 0; i < search_curves.size()-1; ++i) {
-        for (int j = i+1; j < search_curves.size(); ++j) {
-            dist = compute_distance(search_curves[i], search_curves[j], "DFT");
+    for (int i = 0; i < (int)centroids_ind.size() - 1; ++i) {
+        for (int j = i + 1; j < (int)centroids_ind.size(); ++j) {
+            double dist = compute_distance(i, j, "DFT");
             
             if (minim == -1 || dist < minim) {
                 minim = dist;
@@ -195,26 +165,21 @@ vector<int> range_search(const vector<int>& centroids, int dim) {
         }
     }
     
-    double R = (double)(minim/2);
-    int first_time = 1;
+    double R = (double)(minim / 2.0);
     int id;
     
     while (1) {
-        if (first_time == 0) {
-            R = (double)(R*2);
-        }
-        
-        general_search(hashtables, L, delta, k, R, "classic", "DFT", R_closest_curves, search_curves, grid_curves_found);
+        general_search(hashtables, L, delta, k, R, "classic", "DFT", R_closest_curves, centroids_ind, grid_curves_found);
         
         for (int i = 0; i < R_closest_curves.size(); ++i) {
             for (int j = 0; j < R_closest_curves[i].size(); ++j) {
                 id = stoi(R_closest_curves[i][j].get_id());
                 
-                if (assignment[id] == 0) {
-                    assignment[id] = centroids[i];
+                if (assignment[id] == -1) {
+                    assignment[id] = centroids_ind[i];
                 } else {
-                    int dist_1 = compute_distance(R_closest_curves[i][j], search_curves[i], "DFT");
-                    int dist_2 = compute_distance(R_closest_curves[i][j], input_curves[assignment[id]], "DFT"); //prev 
+                    int dist_1 = compute_distance(R_closest_curves[i][j], i, "DFT");
+                    int dist_2 = compute_distance(R_closest_curves[i][j], assignment[id], "DFT"); 
                     
                     if (dist_1 < dist_2) {
                         assignment[id] = centroids[id];
@@ -223,29 +188,25 @@ vector<int> range_search(const vector<int>& centroids, int dim) {
             }
         }
         
-        if (first_time == 0 && assignment == prev_assignment) {
+        if (assignment == prev_assignment) {
             break;
-        } else if (first_time == 1) {
-            first_time = 0;
-        }
+
+        R *= 2;
     }
     
     // assignment for long points
     for (int i = 0; i < assignment.size(); ++i) {
-        if (assignment[i] == 0) {
+        if (assignment[i] == -1) {
             double minim = -1;
-            int centr_id; sσ
             
-            for (int j = 0; j < search_curves.size(); ++j) {
-                dist = compute_distance(input_curves[i], search_curves[j], "DFT");
+            for (int j = 0; j < (int)centroids_ind.size(); ++j) {
+                dist = compute_distance(i, centroids_ind[j], "DFT");
                 
                 if (minim == -1 || dist < minim) {
                     minim = dist;
-                    centr_id = centroids[j];
+                    assignment[i] = centroids_ind[j];
                 }
             }
-            
-            assignment[i] = centr_id;
         }
     }
     

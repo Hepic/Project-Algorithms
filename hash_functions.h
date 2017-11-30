@@ -9,9 +9,9 @@
 
 using namespace std;
 
-vector<Curve> grid_hashing(double, const vector<double>&);
+void grid_hashing(vector<Curve>&, double, const vector<double>&);
 Curve grid_hashing_curve(double, const vector<double>&, const Curve&);
-vector<Curve> multiple_grids(double, int, int = -1);
+void multiple_grids(vector<Curve>&, double, int);
 Curve multiple_grids_curve(double, int, int, const Curve&);
 vector<double> prob_lsh_euclid_hashing(const vector<double>&, int, int, int);
 long long vector_hashing(const vector<double>&);

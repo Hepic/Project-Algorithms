@@ -66,7 +66,7 @@ vector<Curve> List::search(const Curve &curve, const Curve &grid_curve, const ch
         }
         
         if (cmp || !check) {
-            dist = compute_distance(node->curve, curve, dist_function);
+            //dist = compute_distance(node->curve, curve, dist_function);
             
             if ((R && dist < R) || (!R && (min_dist == -1 || dist < min_dist))) {
                 min_dist = dist;
