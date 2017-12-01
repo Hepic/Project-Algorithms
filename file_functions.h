@@ -5,6 +5,5 @@
 #include "curve.h"
 
 void read_file(const char*, int&);
-void read_configuration_file(const char*, int&, int&, int&);
 
 #endif
