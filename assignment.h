@@ -8,6 +8,6 @@
 using namespace std;
 
 double loyd_assignment(const vector<const Curve*>&, vector<vector<int> >&);
-vector<int> range_search(const vector<HashTable> &, const vector<Curve>&, int, double);
+double range_search(const vector<HashTable>&, const vector<const Curve*>&, vector<vector<int> >&, double);
 
 #endif

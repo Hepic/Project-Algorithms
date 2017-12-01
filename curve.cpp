@@ -25,6 +25,10 @@ void Curve::set_id(string id, int int_id) {
     this->int_id = int_id;
 }
 
+void Curve::set_dimension(int dim) {
+    this->dim = dim;
+}
+
 void Curve::insert_point(const vector<double> &point) {
     curve.push_back(point);
 }

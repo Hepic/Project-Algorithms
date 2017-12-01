@@ -18,13 +18,16 @@ void BinaryMeanTree::build_tree(Node *node, int curr, int height, const vector<i
         
         if (this->pos < (int)cluster.size()) {
             build_tree(node->right, curr + 1, height, cluster);
+
             discrete_frechet_distance(node->left->curve, node->right->curve, node->curve, true);   
+            node->curve.set_dimension(input_curves[0].get_dimension());
         } else {
             node->curve = node->left->curve;
         }
 
     } else if (curr == height) {
         node->curve = input_curves[cluster[this->pos++]];
+        node->curve.set_dimension(input_curves[0].get_dimension());
     }
 }
 

@@ -10,10 +10,9 @@
 
 using namespace std;
 
-// choose methods
 int method_init = 1;
 int method_assign = 1;
-int method_update = 2;
+int method_update = 1;
 
 int main(int argc, const char *argv[]) {
     ios::sync_with_stdio(false);
@@ -25,14 +24,16 @@ int main(int argc, const char *argv[]) {
     char *metric = get_arguments(argv, argc, "-d");
     char *complete = get_arguments(argv, argc, "-complete", true);
     
-    int dim = 2; 
-    double delta = 0.2;
-    read_file("test", dim);
-    //read_configuration_file(conf_file);
     num_of_clusters = 3;
     global_k = 2;
     global_L = 3;
     
+    int dim = 2; 
+    double delta = 0.2;
+    read_file(input_file, dim);
+    read_configuration_file(conf_file);  
+    cout << "read" << endl;
+
     clock_t begin = clock();
 
     mem_distance = new double*[(int)input_curves.size()];
@@ -76,6 +77,5 @@ int main(int argc, const char *argv[]) {
     print_file(output_file,metric,silhouette_cluster,elapsed_secs,centroids,clusters,dim,complete);
     
     cout << elapsed_secs << endl;
-    
     return 0;
 }
