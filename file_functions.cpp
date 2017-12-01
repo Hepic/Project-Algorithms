@@ -65,3 +65,26 @@ void read_file(const char *file_name, int &dim) {
     
     file.close();
 }
+
+void read_configuration_file(const char *file_name, int &num_of_clusters, int &k, int &L) {
+    ifstream file(file_name);
+    string str;
+    
+    while (1) {
+        if (file.eof()) {
+            break;
+        }
+        
+        file >> str;
+        
+        if (str.compare("number_of_clusters:") == 0) {
+            file >> num_of_clusters;
+        } else if (str.compare("number_of_grid_curves:") == 0) {
+            file >> k;
+        } else if (str.compare("number_of_hash_tables:") == 0) {
+            file >> L;
+        }
+    }
+    
+    file.close();
+}
