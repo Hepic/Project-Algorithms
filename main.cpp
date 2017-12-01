@@ -21,7 +21,7 @@ int main(int argc, const char *argv[]) {
     
     int dim = 2, num_of_clusters, k = 2, L = 3;
     double delta = 0.2;
-    read_file(input_file, dim);
+    read_file("test", dim);
     //read_configuration_file(conf_file,num_of_clusters, k, L);
 
     clock_t begin = clock();
