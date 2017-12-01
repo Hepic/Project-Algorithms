@@ -4,21 +4,25 @@ vector<Curve> input_curves;
 
 Curve::Curve() {
     this->id = "";
+    this->int_id = -1;
 }
 
-Curve::Curve(string id, int dim) {
+Curve::Curve(string id, int int_id, int dim) {
     this->id = id;
+    this->int_id = int_id;
     this->dim = dim;
 }
 
-Curve::Curve(string id, int dim, const vector<vector<double> > &curve) {
+Curve::Curve(string id, int int_id, int dim,const vector<vector<double> > &curve) {
     this->id = id;
+    this->int_id = int_id;
     this->dim = dim;
     this->curve = curve;
 }
 
-void Curve::set_id(string id) {
+void Curve::set_id(string id, int int_id) {
     this->id = id;
+    this->int_id = int_id;
 }
 
 void Curve::insert_point(const vector<double> &point) {
@@ -39,6 +43,10 @@ int Curve::get_length() const {
 
 string Curve::get_id() const {
     return id;
+}
+
+int Curve::get_int_id() const {
+    return int_id;
 }
 
 double Curve::get_coord_point(int coord, int pnt) const {
@@ -70,7 +78,8 @@ bool Curve::is_empty() const {
 }
 
 void Curve::print_curve() const {
-    cout << "Id: " << id << endl;
+    cout << "Id: " << id << "\n";
+    cout << "int_Id: " << int_id << "\n";
 
     for (int i = 0; i < (int)curve.size(); ++i) {
         cout << "Point " << i << ": ";

@@ -79,7 +79,7 @@ double discrete_frechet_distance(const Curve &curve_1, const Curve &curve_2, Cur
         int p1 = N1 - 1, p2 = N2 - 1;
         Curve reverse_mean_traversal;
         vector<double> mean;
-
+        
         mean = mean_point(curve_1.get_point(p1), curve_2.get_point(p2));
         reverse_mean_traversal.insert_point(mean);
         
@@ -95,8 +95,10 @@ double discrete_frechet_distance(const Curve &curve_1, const Curve &curve_2, Cur
             reverse_mean_traversal.insert_point(mean); 
         }
         
-        mean = mean_point(curve_1.get_point(0), curve_2.get_point(0));
-        reverse_mean_traversal.insert_point(mean);
+        if (p1 || p2) {
+            mean = mean_point(curve_1.get_point(0), curve_2.get_point(0));
+            reverse_mean_traversal.insert_point(mean);
+        }
 
         for (int i = (int)reverse_mean_traversal.get_length() - 1; i >= 0; --i) {
             mean_traversal.insert_point(reverse_mean_traversal.get_point(i));
@@ -160,17 +162,23 @@ double dynamic_time_wrapping(const Curve &curve_1, const Curve &curve_2) {
     return result;
 }
 
-double compute_distance(int p1, int p2, const char *dist_function) {
-    double &dist = mem_distance[p1][p2];
-    
-    if (dist != -1) {
-        return dist;
+double compute_distance(const Curve &curve_1, const Curve &curve_2, const char *dist_function) {
+    if (curve_1.get_int_id() != -1 && curve_2.get_int_id() != -1) {
+        if (mem_distance[curve_1.get_int_id()][curve_2.get_int_id()] != -1) {
+            return mem_distance[curve_1.get_int_id()][curve_2.get_int_id()]; 
+        }
     }
+    
+    double dist;
 
     if (!strcmp(dist_function, "DFT")) {
-        dist = discrete_frechet_distance(input_curves[p1], input_curves[p2]);
+        dist = discrete_frechet_distance(curve_1, curve_2);
     } else if (!strcmp(dist_function, "DTW")) {
-        dist = dynamic_time_wrapping(input_curves[p1], input_curves[p2]);
+        dist = dynamic_time_wrapping(curve_1, curve_2);
+    }
+    
+    if (curve_1.get_int_id() != -1 && curve_2.get_int_id() != -1) {
+        mem_distance[curve_1.get_int_id()][curve_2.get_int_id()] = dist;
     }
     
     return dist;

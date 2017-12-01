@@ -67,11 +67,9 @@ void HashTable::insert(const Curve &curve, const Curve &grid_curve, const char *
     table[index].insert(curve, grid_curve);
 }
 
-vector<Curve> HashTable::search(const Curve &curve, const Curve &grid_curve, const char *hash_function, const char *dist_function, double R, bool check) const {
+void HashTable::search(vector<Curve> &closer_curves, const Curve &curve, const Curve &grid_curve, const char *hash_function, const char *dist_function, double R, vector<bool> &visited, bool check) const {
     int index = get_index(grid_curve, hash_function);
-    vector<Curve> closer_curve = table[index].search(curve, grid_curve, hash_function, dist_function, R, check);
-
-    return closer_curve;
+    table[index].search(closer_curves, curve, grid_curve, hash_function, dist_function, R, visited, check);
 }
 
 void HashTable::print_bucket(int index) const {

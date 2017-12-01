@@ -53,12 +53,16 @@ void List::print_list() const {
     cout << endl;
 }
 
-vector<Curve> List::search(const Curve &curve, const Curve &grid_curve, const char *hash_function, const char *dist_function, double R, bool check) const {
+void List::search(vector<Curve> &closer_curves, const Curve &curve, const Curve &grid_curve, const char *hash_function, const char *dist_function, double R, vector<bool> &visited, bool check) const {
     Node *node = head;
-    vector<Curve> min_curve;
-    double min_dist = -1, dist;
+    double dist;
     
     while (node != NULL) {
+        if (visited[node->curve.get_int_id()]) {
+            node = node->next;
+            continue;
+        }
+
         bool cmp = false;
         
         if (check) {
@@ -66,27 +70,14 @@ vector<Curve> List::search(const Curve &curve, const Curve &grid_curve, const ch
         }
         
         if (cmp || !check) {
-            //dist = compute_distance(node->curve, curve, dist_function);
+            dist = compute_distance(node->curve, curve, dist_function);
             
-            if ((R && dist < R) || (!R && (min_dist == -1 || dist < min_dist))) {
-                min_dist = dist;
-
-                if (!R) {
-                    if (!min_curve.empty()) {
-                        min_curve.front() = node->curve;
-                    } else {
-                        min_curve.push_back(node->curve);
-                    }
-                    
-                    min_dist = dist;
-                } else {
-                    min_curve.push_back(node->curve);
-                }
+            if (dist <= R) {
+                closer_curves.push_back(node->curve);
+                visited[node->curve.get_int_id()] = true;
             }
         }
         
         node = node->next;
     }
-
-    return min_curve;
 }

@@ -48,7 +48,7 @@ int main(int argc, const char *argv[]) {
     }
     
     insert_curves_into_hashtables(hashtables, L, delta, k, "classic"); 
-    //clustering(); 
+    clustering(hashtables, L, k, delta); 
 
     clock_t end = clock();
     double elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;

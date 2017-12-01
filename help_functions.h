@@ -3,11 +3,12 @@
 
 #include <iostream>
 #include <string>
+#include <vector>
+#include <set>
 #include "curve.h"
 #include "hashtable.h"
 #include "hash_functions.h"
 #include "distances.h"
-#include <vector>
 
 using namespace std;
 
@@ -19,7 +20,7 @@ double uniform_distribution(double, double);
 double normal_distribution(double, double);
 double dot_product(const vector<double>&, const vector<double>&);
 void insert_curves_into_hashtables(vector<HashTable>&, int, double, int, const char*);
-void search_curves_from_hashtables(const vector<HashTable>&, int, double, int, double, const char*, const char* , vector<vector<Curve> >&, const vector<bool>&, vector<Curve>&, bool = true);
-void general_search(const vector<HashTable>&, int, double, int, double, const char*, const char*, vector<vector<Curve> >&, vector<Curve>&, vector<bool>&);
+void search_curves_from_hashtables(const vector<HashTable>&, int, double, int, double, const char*, const char* , vector<set<Curve> >&, const vector<bool>&, const vector<Curve>&, vector<bool>&, bool = true);
+void general_search(const vector<HashTable>&, int, double, int, double, const char*, const char*, vector<set<Curve> >&, const vector<Curve>&, vector<bool>&, vector<bool>&);
 
 #endif

@@ -19,7 +19,7 @@ class List {
         ~List();
         void insert(const Curve&, const Curve&);
         void print_list() const;
-        vector<Curve> search(const Curve&, const Curve&, const char*, const char*, double, bool = true) const;
+        void search(vector<Curve>&, const Curve&, const Curve&, const char*, const char*, double, vector<bool>&, bool = true) const;
 };
 
 #endif

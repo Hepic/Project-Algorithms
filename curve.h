@@ -8,20 +8,21 @@
 using namespace std;
 
 class Curve {
-    int dim;
+    int dim, int_id;
     string id;
     vector<vector<double> > curve;
 
     public:
         Curve();
-        Curve(string, int);
-        Curve(string, int, const vector<vector<double> >&);
-        void set_id(string);
+        Curve(string, int, int);
+        Curve(string, int, int, const vector<vector<double> >&);
+        void set_id(string, int);
         void insert_point(const vector<double>&);
         void clear_curve();
         int get_dimension() const;
         int get_length() const;
         string get_id() const;
+        int get_int_id() const;
         double get_coord_point(int, int) const;
         const vector<double>& get_point(int) const;
         const vector<double>& get_last_point() const;

@@ -38,22 +38,21 @@ void grid_hashing(vector<Curve> &modified_curves, double delta, const vector<dou
     }
 }
 
-Curve grid_hashing_curve(double delta, const vector<double> &t_shift_grid, const Curve &curve) {
-    vector<double> closest_point;
-
-    Curve modified_curve;
-    modified_curve.set_id(curve.get_id());
+void grid_hashing_curve(Curve &modified_curve, double delta, const vector<double> &t_shift_grid, const Curve &curve) {
+    vector<double> closest_point, lower_left_point, shifted_point;
+    modified_curve.set_id(curve.get_id(), curve.get_int_id()); 
     
+    lower_left_point.resize(curve.get_dimension());
+    shifted_point.resize(curve.get_dimension());
+
     for (int i = 0; i < curve.get_length(); ++i) {
-        vector<double> lower_left_point, shifted_point;
-        
         for(int j = 0; j < curve.get_dimension(); ++j) {
             double value = curve.get_coord_point(j, i);
             double shifted_value = value - t_shift_grid[j];
             double image_value = (int)(shifted_value / delta);
             
-            lower_left_point.push_back(image_value);
-            shifted_point.push_back(shifted_value);
+            lower_left_point[j] = image_value;
+            shifted_point[j] = shifted_value;
         }
         
         closest_point.clear();
@@ -65,8 +64,6 @@ Curve grid_hashing_curve(double delta, const vector<double> &t_shift_grid, const
         
         modified_curve.insert_point(closest_point);
     }
-    
-    return modified_curve;
 }
 
 void multiple_grids(vector<Curve> &concat_curves, double delta, int k) {
@@ -98,20 +95,20 @@ void multiple_grids(vector<Curve> &concat_curves, double delta, int k) {
     t_shift.push_back(t_shift_k_grids);
 
     for (int i = 0; i < (int)input_curves.size(); ++i) {
-        concat_curves[i].set_id(input_curves[i].get_id());
+        concat_curves[i].set_id(input_curves[i].get_id(), input_curves[i].get_int_id());
     }
 }
 
-Curve multiple_grids_curve(double delta, int k, int hash_id, const Curve &curve) {
-    Curve concat_curve;
-    concat_curve.set_id(curve.get_id());
+void multiple_grids_curve(Curve &concat_curve, double delta, int k, int hash_id, const Curve &curve) {
+    concat_curve.set_id(curve.get_id(), curve.get_int_id());
+    Curve modified_curve;
 
-    for (int i = 0; i < k; ++i) { // create concatenatedd grid_curve after k grid_hashings
-        Curve modified_curve = grid_hashing_curve(delta, t_shift[hash_id][i], curve);
+    for (int i = 0; i < k; ++i) { // create concatenated grid_curve after k grid_hashings
+        modified_curve.clear_curve();
+        grid_hashing_curve(modified_curve, delta, t_shift[hash_id][i], curve);
+
         concat_curve.append_curve(modified_curve);
     }
-    
-    return concat_curve;
 }
 
 vector<double> prob_lsh_euclid_hashing(const vector<double> &vec, int w, int k_vec, int hash_id) {

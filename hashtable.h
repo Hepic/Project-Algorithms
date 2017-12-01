@@ -15,7 +15,7 @@ class HashTable {
         int get_id() const;
         long long get_index(const Curve &curve, const char*) const;
         void insert(const Curve&, const Curve&, const char*);
-        vector<Curve> search(const Curve&, const Curve&, const char*, const char*, double, bool = true) const;
+        void search(vector<Curve>&, const Curve&, const Curve&, const char*, const char*, double, vector<bool>&, bool = true) const;
         void print_bucket(int) const;
 };
 
