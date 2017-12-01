@@ -87,7 +87,7 @@ void k_means_pp(vector<int> &centroids_ind, vector<const Curve*> &centroids, int
     }
 }
 
-double loyd_assignment(const vector<int> &centroids, vector<int> &assign, vector<double> &close_dist, vector<double> &close_dist_sec, vector<vector<int> > &clusters) {
+double loyd_assignment(const vector<int> &centroids, vector<int> &assign, vector<double> &close_dist, vector<double> &close_dist_sec, vector<vector<int> > &clusters, char *metric) {
     double min_dist, min_dist_sec, dist, value = 0;
     int p_centr;
     
@@ -99,7 +99,7 @@ double loyd_assignment(const vector<int> &centroids, vector<int> &assign, vector
         min_dist = -1;
         
         for (int j = 0; j < (int)centroids.size(); ++j) {
-            dist = compute_distance(i, centroids[j], "DFT");
+            dist = compute_distance(i, centroids[j], metric);
 
             if (min_dist == -1 || dist < min_dist) {
                 min_dist_sec = min_dist;
@@ -149,7 +149,7 @@ double loyd_assignment(const vector<const Curve*> &centroids, vector<vector<int>
     return value;
 }
 
-double swap_update_centroid(int old_centr, int new_centr, const vector<int> &assign, const vector<double> &close_dist, const vector<double> &close_dist_sec) {
+double swap_update_centroid(int old_centr, int new_centr, const vector<int> &assign, const vector<double> &close_dist, const vector<double> &close_dist_sec, char *metric) {
     double value = 0;
 
     for (int i = 0; i < (int)assign.size(); ++i) {
@@ -157,7 +157,7 @@ double swap_update_centroid(int old_centr, int new_centr, const vector<int> &ass
             continue;
         }
 
-        double dist = compute_distance(i, new_centr, "DFT");
+        double dist = compute_distance(i, new_centr, metric);
 
         if (assign[i] != old_centr) {
             value += min(dist, close_dist[i]);
@@ -169,7 +169,7 @@ double swap_update_centroid(int old_centr, int new_centr, const vector<int> &ass
     return value;
 }
 
-bool PAM_update(vector<int> &centroids, const vector<int> &assign, const vector<double> &close_dist, const vector<double> &close_dist_sec, double value, const vector<int> &cluster, int p_clust) {
+bool PAM_update(vector<int> &centroids, const vector<int> &assign, const vector<double> &close_dist, const vector<double> &close_dist_sec, double value, const vector<int> &cluster, int p_clust, char *metric) {
     double min_value = value; 
     int new_cent = -1;
     
@@ -178,7 +178,7 @@ bool PAM_update(vector<int> &centroids, const vector<int> &assign, const vector<
             continue;
         }
         
-        double new_value = swap_update_centroid(centroids[p_clust], cluster[i], assign, close_dist, close_dist_sec); 
+        double new_value = swap_update_centroid(centroids[p_clust], cluster[i], assign, close_dist, close_dist_sec, metric);
 
         if (new_value < min_value) {
             min_value = new_value;
@@ -210,7 +210,7 @@ bool mean_frechet_update(vector<const Curve*> &centroids, const vector<vector<in
     return check;
 }
 
-void clustering() {
+void clustering(char *metric) {
     vector<const Curve*> centroids;
     vector<int> assignment(input_curves.size()), centroids_ind;
     vector<double> close_dist(input_curves.size()), close_dist_sec(input_curves.size());
@@ -218,7 +218,7 @@ void clustering() {
     double value;
     int num_of_clusters = 2;
     
-    k_means_pp(centroids_ind, centroids, input_curves.size(), num_of_clusters, "DFT");
+    k_means_pp(centroids_ind, centroids, input_curves.size(), num_of_clusters, metric);
     cout << "initialization ended" << endl;
     
     vector<vector<int> > clusters(num_of_clusters);
@@ -227,7 +227,7 @@ void clustering() {
         for (int i = 0; i < num_of_clusters; ++i) {
             //value = loyd_assignment(centroids_ind, assignment, close_dist, close_dist_sec, clusters);
             value = loyd_assignment(centroids, clusters);
-            //check = PAM_update(centroids_ind, assignment, close_dist, close_dist_sec, value, clusters[i], i); 
+            //check = PAM_update(centroids_ind, assignment, close_dist, close_dist_sec, value, clusters[i], i, metric); 
             check = mean_frechet_update(centroids, clusters);
         }
     } while(check);
