@@ -5,13 +5,17 @@
 #include <math.h>
 #include "help_functions.h"
 
-char *get_arguments(const char *argv[], int len, const char *flag) {
+char *get_arguments(const char *argv[], int len, const char *flag, bool same) {
     for (int i = 0; i < len; ++i) {
-        if (!strcmp(argv[i], flag)) {
-            return (char*)argv[i+1]; 
+        if(!strcmp(argv[i], flag)) {
+            if (same) {
+                return (char*)argv[i];
+            } else {
+                return (char*)argv[i+1];
+            }
         }
     }
-
+    
     return (char*)"";
 }
 
@@ -61,11 +65,11 @@ double dot_product(const vector<double> &vec_1, const vector<double> &vec_2) {
     return dot;
 }
 
-void insert_curves_into_hashtables(vector<HashTable> &hashtables, int L, double delta, int k, const char *hash_function) {
+void insert_curves_into_hashtables(vector<HashTable> &hashtables, double delta, const char *hash_function) {
     vector<Curve> concat_curves(input_curves.size(), Curve());
     
-    for (int i = 0; i < L; ++i) { 
-        multiple_grids(concat_curves, delta, k);
+    for (int i = 0; i < global_L; ++i) {
+        multiple_grids(concat_curves, delta);
 
         for (int j = 0; j < (int)concat_curves.size(); ++j) {
             hashtables[i].insert(input_curves[j], concat_curves[j], hash_function);
@@ -74,7 +78,7 @@ void insert_curves_into_hashtables(vector<HashTable> &hashtables, int L, double 
     }
 }
 
-void search_curves_from_hashtables(const vector<HashTable> &hashtables, int L, double delta, int k, double R, const char *hash_function, const char *dist_function, vector<set<Curve> > &R_closest_curves, const vector<bool> &grid_curves_found, const vector<Curve> &centroids, vector<bool> &visited, bool check) {
+void search_curves_from_hashtables(const vector<HashTable> &hashtables, double delta, double R, const char *hash_function, const char *dist_function, vector<set<Curve> > &R_closest_curves, const vector<bool> &grid_curves_found, const vector<Curve> &centroids, vector<bool> &visited, bool check) {
     vector<double> min_curve_dist((int)centroids.size(), -1);
     Curve concat_curve;
 
@@ -83,15 +87,15 @@ void search_curves_from_hashtables(const vector<HashTable> &hashtables, int L, d
             continue;
         }
         
-        for (int j = 0; j < L; ++j) {
+        for (int j = 0; j < global_L; ++j) {
             concat_curve.clear_curve();
-            multiple_grids_curve(concat_curve, delta, k, hashtables[j].get_id(), centroids[i]); // retrieve concatenated grid_curve
+            multiple_grids_curve(concat_curve, delta, hashtables[j].get_id(), centroids[i]); // retrieve concatenated grid_curve
  
             vector<Curve> closer_curves;
             hashtables[j].search(closer_curves, centroids[i], concat_curve, hash_function, dist_function, R, visited, check);
             
             if (!closer_curves.empty()) {
-                for (int k = 0; k < (int)closer_curves.size(); ++k) {
+                for (int k = 0; global_k < (int)closer_curves.size(); ++k) {
                     R_closest_curves[i].insert(closer_curves[k]);
                 }
             }
@@ -99,9 +103,9 @@ void search_curves_from_hashtables(const vector<HashTable> &hashtables, int L, d
     }
 }
 
-void general_search(const vector<HashTable> &hashtables, int L, double delta, int k, double R, const char *hash_function, const char *dist_function, vector<set<Curve> > &R_closest_curves, const vector<Curve> &centroids, vector<bool> &grid_curves_found, vector<bool> &visited) {
+void general_search(const vector<HashTable> &hashtables, double delta, double R, const char *hash_function, const char *dist_function, vector<set<Curve> > &R_closest_curves, const vector<Curve> &centroids, vector<bool> &grid_curves_found, vector<bool> &visited) {
     // check first if grid_curve is same
-    search_curves_from_hashtables(hashtables, L, delta, k, R, hash_function, dist_function, R_closest_curves, grid_curves_found, centroids, visited); 
+    search_curves_from_hashtables(hashtables, delta, R, hash_function, dist_function, R_closest_curves, grid_curves_found, centroids, visited);
     
     // keep curves that grid_curve was found
     for (int i = 0; i < (int)centroids.size(); ++i) { 
@@ -111,5 +115,5 @@ void general_search(const vector<HashTable> &hashtables, int L, double delta, in
     }
 
     // search without checking grid_curve for curves that we did not find anything before
-    search_curves_from_hashtables(hashtables, L, delta, k, R, hash_function, dist_function, R_closest_curves, grid_curves_found, centroids, visited, false); 
+    search_curves_from_hashtables(hashtables, delta, R, hash_function, dist_function, R_closest_curves, grid_curves_found, centroids, visited, false); 
 }
