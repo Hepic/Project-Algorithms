@@ -22,16 +22,17 @@ void clustering(const vector<HashTable> &hashtables, double delta, vector<double
     
     do {
         if (method_assign == 1) {
-            value = range_search(hashtables, centroids, clusters, delta, metric);
-        } else if (method_assign == 2) {
             value = loyd_assignment(centroids, clusters, metric);
+        } else if (method_assign == 2) {
+            value = range_search(hashtables, centroids, clusters, delta, metric);
         }
-        
+
         if (method_update == 1) {
             check = mean_frechet_update(centroids, clusters);
         } else if (method_update == 2) {
             check = PAM_update(centroids, value, clusters, metric);
         }
+
     } while(check);
     
     silhouette(centroids, clusters, silhouette_cluster); 

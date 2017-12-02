@@ -14,6 +14,7 @@ int method_init;
 int method_assign;
 int method_update;
 
+
 int main(int argc, const char *argv[]) {
     ios::sync_with_stdio(false);
     srand(time(NULL));
@@ -27,7 +28,7 @@ int main(int argc, const char *argv[]) {
     method_assign = atoi(get_arguments(argv, argc, "-assign"));
     method_update = atoi(get_arguments(argv, argc, "-update"));
     
-    //num_of_clusters = 3;
+    num_of_clusters = 3;
     global_k = 2;
     global_L = 3;
     
@@ -68,8 +69,10 @@ int main(int argc, const char *argv[]) {
     vector<vector<int> > clusters(num_of_clusters);
     vector<double> silhouette_cluster(num_of_clusters);
     
-    insert_curves_into_hashtables(hashtables, delta, "classic");
-    
+    if (method_assign == 2) {
+        insert_curves_into_hashtables(hashtables, delta, "classic");
+    }
+
     clock_t begin = clock();
     clustering(hashtables, delta, silhouette_cluster, centroids, clusters, metric);
     clock_t end = clock();
