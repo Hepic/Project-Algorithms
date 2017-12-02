@@ -9,7 +9,7 @@
 #include "assignment.h"
 #include "update.h"
 
-void clustering(const vector<HashTable> &hashtables, double delta, vector<double> &silhouette_cluster, vector<const Curve*> &centroids, vector<vector<int> > &clusters, char *metric) {
+void clustering(const vector<HashTable> &hashtables, double delta, vector<double> &silhouette_cluster, vector<const Curve*> &centroids, vector<vector<int> > &clusters, const char *metric) {
     vector<int> assignment(input_curves.size());
     bool check;
     double value;
@@ -19,8 +19,6 @@ void clustering(const vector<HashTable> &hashtables, double delta, vector<double
     } else if (method_init == 2) {
         k_random_selection(centroids, input_curves.size());
     }
-    
-    cout << "initialization ended" << endl;
     
     do {
         if (method_assign == 1) {
@@ -36,14 +34,7 @@ void clustering(const vector<HashTable> &hashtables, double delta, vector<double
         }
     } while(check);
     
-    silhouette(centroids, clusters, silhouette_cluster, metric);
-    cout << "value = " << value << endl;
-
-    for (int i = 0; i < (int)input_curves.size(); ++i) {
-        cout << assignment[i] << " ";
-    }
-
-    cout << endl;
+    silhouette(centroids, clusters, silhouette_cluster); 
 }
 
 void silhouette(const vector<const Curve*> &centroids, vector<vector<int> > &clusters, vector<double> &silhouette_cluster, char *metric) {
@@ -74,7 +65,6 @@ void silhouette(const vector<const Curve*> &centroids, vector<vector<int> > &clu
         }
         
         res = (double)(res / (int)clusters[i].size());
-
         silhouette_cluster[i] = res;
     }
 }

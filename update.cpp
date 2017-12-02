@@ -7,7 +7,7 @@
 #include "binary_mean_tree.h"
 #include "update.h"
 
-double swap_update_centroid(const vector<const Curve*> &centroids, int old_centr, int new_centr, const vector<int> &assign, const vector<double> &close_dist, const vector<double> &close_dist_sec, char *metric) {
+double swap_update_centroid(const vector<const Curve*> &centroids, int old_centr, int new_centr, const vector<int> &assign, const vector<double> &close_dist, const vector<double> &close_dist_sec, const char *metric) {
     double value = 0;
     
     for (int i = 0; i < (int)assign.size(); ++i) {
@@ -27,7 +27,7 @@ double swap_update_centroid(const vector<const Curve*> &centroids, int old_centr
     return value;
 }
 
-bool PAM_update(vector<const Curve*> &centroids, double value, const vector<vector<int> > &clusters, char *metric) {
+bool PAM_update(vector<const Curve*> &centroids, double value, const vector<vector<int> > &clusters, const char *metric) {
     vector<double> close_dist((int)input_curves.size(), -1), close_dist_sec((int)input_curves.size(), -1);
     vector<int> assign((int)input_curves.size());
     

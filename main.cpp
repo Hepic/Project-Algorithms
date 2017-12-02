@@ -35,9 +35,6 @@ int main(int argc, const char *argv[]) {
     double delta = 0.2;
     read_file(input_file, dim);
     read_configuration_file(conf_file);
-    cout << "read" << endl;
-
-    clock_t begin = clock();
 
     mem_distance = new double*[(int)input_curves.size()];
 
@@ -72,13 +69,13 @@ int main(int argc, const char *argv[]) {
     vector<double> silhouette_cluster(num_of_clusters);
     
     insert_curves_into_hashtables(hashtables, delta, "classic");
+    
+    clock_t begin = clock();
     clustering(hashtables, delta, silhouette_cluster, centroids, clusters, metric);
-    
     clock_t end = clock();
+
     double elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
-    
     print_file(output_file, metric, silhouette_cluster, elapsed_secs, centroids, clusters, dim, complete);
-    
-    cout << elapsed_secs << endl;
+
     return 0;
 }
