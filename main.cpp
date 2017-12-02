@@ -31,8 +31,8 @@ int main(int argc, const char *argv[]) {
     int dim = 2; 
     double delta = 0.2;
     read_file(input_file, dim);
-    read_configuration_file(conf_file);  
-    cout << "read " << endl;
+    read_configuration_file(conf_file);
+    cout << "read" << endl;
 
     clock_t begin = clock();
 
