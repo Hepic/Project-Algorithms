@@ -7,7 +7,7 @@
 
 using namespace std;
 
-vector<int> k_random_selection(int, int);
-void k_means_pp(vector<const Curve*>&, int, int, const char*);
+void k_random_selection(vector<const Curve*>&, int);
+void k_means_pp(vector<const Curve*>&, int, const char*);
 
 #endif
