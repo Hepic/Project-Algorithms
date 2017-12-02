@@ -14,7 +14,6 @@ int method_init;
 int method_assign;
 int method_update;
 
-
 int main(int argc, const char *argv[]) {
     ios::sync_with_stdio(false);
     srand(time(NULL));
@@ -28,7 +27,7 @@ int main(int argc, const char *argv[]) {
     method_assign = atoi(get_arguments(argv, argc, "-assign"));
     method_update = atoi(get_arguments(argv, argc, "-update"));
     
-    num_of_clusters = 3;
+    num_of_clusters = 2;
     global_k = 2;
     global_L = 3;
     
