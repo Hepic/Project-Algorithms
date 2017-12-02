@@ -66,7 +66,7 @@ void grid_hashing_curve(Curve &modified_curve, double delta, const vector<double
     }
 }
 
-void multiple_grids(vector<Curve> &concat_curves, double delta, int k) {
+void multiple_grids(vector<Curve> &concat_curves, double delta) {
     vector<Curve> modified_curves(input_curves.size(), Curve());
     vector<double> t_shift_grid;
     vector<vector<double> > t_shift_k_grids;
@@ -76,7 +76,7 @@ void multiple_grids(vector<Curve> &concat_curves, double delta, int k) {
         dim = input_curves[0].get_dimension();
     } 
 
-    for (int i = 0; i < k; ++i) {
+    for (int i = 0; i < global_k; ++i) {
         t_shift_grid.clear();
     
         for (int j = 0; j < dim; ++j) {
@@ -99,11 +99,11 @@ void multiple_grids(vector<Curve> &concat_curves, double delta, int k) {
     }
 }
 
-void multiple_grids_curve(Curve &concat_curve, double delta, int k, int hash_id, const Curve &curve) {
+void multiple_grids_curve(Curve &concat_curve, double delta, int hash_id, const Curve &curve) {
     concat_curve.set_id(curve.get_id(), curve.get_int_id());
     Curve modified_curve;
 
-    for (int i = 0; i < k; ++i) { // create concatenated grid_curve after k grid_hashings
+    for (int i = 0; i < global_k; ++i) { // create concatenated grid_curve after k grid_hashings
         modified_curve.clear_curve();
         grid_hashing_curve(modified_curve, delta, t_shift[hash_id][i], curve);
 
