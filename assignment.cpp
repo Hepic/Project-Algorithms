@@ -33,7 +33,7 @@ double loyd_assignment(const vector<const Curve*> &centroids, vector<vector<int>
     return value;
 }
 
-vector<int> range_search(const vector<HashTable> &hashtables, const vector<Curve> &centroids, int dim, int L, int k, double delta) {
+vector<int> range_search(const vector<HashTable> &hashtables, const vector<Curve> &centroids, int dim, double delta) {
     vector<int> assignment((int)input_curves.size(), -1);
     vector<set<Curve> > R_closest_curves((int)centroids.size());
     vector<bool> grid_curves_found((int)centroids.size(), false), visited((int)input_curves.size(), false);
@@ -55,7 +55,7 @@ vector<int> range_search(const vector<HashTable> &hashtables, const vector<Curve
     cout << "R = " << R << endl;
     
     while (1) {
-        general_search(hashtables, L, delta, k, R, "classic", "DFT", R_closest_curves, centroids, grid_curves_found, visited);
+        general_search(hashtables, delta, R, "classic", "DFT", R_closest_curves, centroids, grid_curves_found, visited);
         bool found = false;
         
         for (int i = 0; i < (int)R_closest_curves.size(); ++i) {

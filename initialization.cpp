@@ -6,31 +6,28 @@
 #include "help_functions.h"
 #include "initialization.h"
 
-vector<int> k_random_selection(int len, int k) {
+void k_random_selection(vector<const Curve*> &centroids, int len) {
     vector<int> all_random_points(len);
-    vector<int> pick_random_points(k);
     
     for (int i = 0; i < len; ++i) {
         all_random_points[i] = i;
     }
     
-    for (int i = 0; i < k; ++i) {
+    for (int i = 0; i < num_of_clusters; ++i) {
         int pos = rand() % (len - i) + i;
         swap(all_random_points[pos], all_random_points[i]);
         
-        pick_random_points[i] = all_random_points[i];
+        centroids.push_back(&input_curves[all_random_points[i]]);
     }
-    
-    return pick_random_points;
 }
 
-void k_means_pp(vector<const Curve*> &centroids, int len, int k, const char *dist_func) {
+void k_means_pp(vector<const Curve*> &centroids, int len, const char *dist_func) {
     vector<double> min_distance(len, -1);
     vector<bool> is_centroid(len, false);
     int pos;
     double max_sum = 0;
     
-    centroids.reserve(k);
+    centroids.reserve(num_of_clusters);
     
     for (int t = 0; ; ++t) {
         if (!t) {
@@ -40,7 +37,7 @@ void k_means_pp(vector<const Curve*> &centroids, int len, int k, const char *dis
             centroids.push_back(&input_curves[pos]);
         }
         
-        if (t == k - 1) {
+        if (t == num_of_clusters - 1) {
             break;
         }
         

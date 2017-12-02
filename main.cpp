@@ -10,6 +10,11 @@
 
 using namespace std;
 
+// choose methods
+int method_init = 1;
+int method_assign = 1;
+int method_update = 2;
+
 int main(int argc, const char *argv[]) {
     ios::sync_with_stdio(false);
     srand(time(NULL));
@@ -18,12 +23,16 @@ int main(int argc, const char *argv[]) {
     char *conf_file = get_arguments(argv, argc, "-c");
     char *output_file = get_arguments(argv, argc, "-o");
     char *metric = get_arguments(argv, argc, "-d");
+    char *complete = get_arguments(argv, argc, "-complete", true);
     
-    int dim = 2, num_of_clusters, k = 2, L = 3;
+    int dim = 2; 
     double delta = 0.2;
     read_file("test", dim);
-    //read_configuration_file(conf_file,num_of_clusters, k, L);
-
+    //read_configuration_file(conf_file);
+    num_of_clusters = 3;
+    global_k = 2;
+    global_L = 3;
+    
     clock_t begin = clock();
 
     mem_distance = new double*[(int)input_curves.size()];
@@ -43,22 +52,28 @@ int main(int argc, const char *argv[]) {
         max_points = max(max_points, value);
     }
     
-    for (int i = 0; i < max_points * k * dim; ++i) {
+    for (int i = 0; i < max_points * global_k * dim; ++i) {
         vec_r.push_back(rand() % MAX_R);
     }
     
     int table_size = (int)input_curves.size() / 4 + 1;
-    vector<HashTable> hashtables(L + 1, HashTable(table_size));
+    vector<HashTable> hashtables(global_L + 1, HashTable(table_size));
     
-    for (int i = 0; i < L; ++i) {
+    for (int i = 0; i < global_L ; ++i) {
         hashtables[i].set_id(i);
     }
     
-    insert_curves_into_hashtables(hashtables, L, delta, k, "classic"); 
-    clustering(hashtables, L, k, delta); 
-
+    vector<const Curve*> centroids;
+    vector<vector<int> > clusters(num_of_clusters);
+    vector<double> silhouette_cluster(num_of_clusters);
+    
+    insert_curves_into_hashtables(hashtables, delta, "classic");
+    clustering(hashtables, delta, silhouette_cluster, centroids, clusters);
+    
     clock_t end = clock();
     double elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
+    
+    print_file(output_file,metric,silhouette_cluster,elapsed_secs,centroids,clusters,dim,complete);
     
     cout << elapsed_secs << endl;
     
