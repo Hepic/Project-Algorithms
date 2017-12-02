@@ -74,7 +74,7 @@ int main(int argc, const char *argv[]) {
     clock_t end = clock();
     double elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
     
-    print_file(output_file,metric,silhouette_cluster,elapsed_secs,centroids,clusters,dim,complete);
+    print_file(output_file, metric, silhouette_cluster, elapsed_secs, centroids, clusters, dim, complete);
     
     cout << elapsed_secs << endl;
     return 0;
