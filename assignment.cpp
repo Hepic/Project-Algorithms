@@ -33,17 +33,19 @@ double loyd_assignment(const vector<const Curve*> &centroids, vector<vector<int>
     return value;
 }
 
-vector<int> range_search(const vector<HashTable> &hashtables, const vector<Curve> &centroids, int dim, double delta) {
+double range_search(const vector<HashTable> &hashtables, const vector<const Curve*> &centroids, vector<vector<int> > &clusters, double delta) {
     vector<int> assignment((int)input_curves.size(), -1);
     vector<set<Curve> > R_closest_curves((int)centroids.size());
     vector<bool> grid_curves_found((int)centroids.size(), false), visited((int)input_curves.size(), false);
-    double minim = -1;
+    double minim = -1, value = 0;
     
+    for (int i = 0; i < (int)clusters.size(); ++i) {
+        clusters[i].clear();
+    }
+
     for (int i = 0; i < (int)centroids.size(); ++i) {
-        centroids[i].print_curve();
-        
         for (int j = i + 1; j < (int)centroids.size(); ++j) {
-            double dist = compute_distance(centroids[i], centroids[j], "DFT");
+            double dist = compute_distance(*centroids[i], *centroids[j], "DFT");
             
             if (minim == -1 || dist < minim) {
                 minim = dist;
@@ -52,7 +54,6 @@ vector<int> range_search(const vector<HashTable> &hashtables, const vector<Curve
     }
     
     double R = minim / 2.0;
-    cout << "R = " << R << endl;
     
     while (1) {
         general_search(hashtables, delta, R, "classic", "DFT", R_closest_curves, centroids, grid_curves_found, visited);
@@ -62,14 +63,12 @@ vector<int> range_search(const vector<HashTable> &hashtables, const vector<Curve
             for (set<Curve>::const_iterator itr = R_closest_curves[i].begin(); itr != R_closest_curves[i].end(); ++itr) {
                 int id = itr->get_int_id();
                 
-                itr->print_curve();
-                
                 if (assignment[id] == -1) {
                     assignment[id] = i;
                     found = true;
                 } else {
-                    int dist_1 = compute_distance(*itr, centroids[i], "DFT");
-                    int dist_2 = compute_distance(*itr, centroids[assignment[id]], "DFT");
+                    int dist_1 = compute_distance(*itr, *centroids[i], "DFT");
+                    int dist_2 = compute_distance(*itr, *centroids[assignment[id]], "DFT");
                     
                     if (dist_1 < dist_2) {
                         assignment[id] = i;
@@ -92,15 +91,22 @@ vector<int> range_search(const vector<HashTable> &hashtables, const vector<Curve
             double minim = -1;
             
             for (int j = 0; j < (int)centroids.size(); ++j) {
-                double dist = compute_distance(input_curves[i], centroids[j], "DFT");
+                double dist = compute_distance(input_curves[i], *centroids[j], "DFT");
                 
                 if (minim == -1 || dist < minim) {
                     minim = dist;
                     assignment[i] = j;
                 }
             }
+
+            value += minim;
+        } else {
+            double dist = compute_distance(input_curves[i], *centroids[assignment[i]], "DFT");
+            value += dist;
         }
+        
+        clusters[assignment[i]].push_back(i);
     }
-    
-    return assignment;
+
+    return value;
 }

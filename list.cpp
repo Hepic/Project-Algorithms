@@ -74,7 +74,6 @@ void List::search(vector<Curve> &closer_curves, const Curve &curve, const Curve 
             
             if (dist <= R) {
                 closer_curves.push_back(node->curve);
-                visited[node->curve.get_int_id()] = true;
             }
         }
         

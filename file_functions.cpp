@@ -66,6 +66,7 @@ void read_file(const char *file_name, int &dim) {
         
         input_curves.push_back(curve);
     }
+
     file.close();
 }
 
@@ -96,46 +97,58 @@ void print_file(const char *file_name,const char *metric, vector<double> &silhou
     out_file << "I" << method_init << "A" << method_assign << "U" << method_update << "\n";
     out_file << "Metric: " << metric << "\n";
     
-    for (int i = 0; i < clusters.size(); ++i) {
-        out_file << "CLUSTER-" << i << " {size: " << clusters[i].size() << ", centroid: ";
+    for (int i = 0; i < (int)clusters.size(); ++i) {
+        out_file << "CLUSTER-" << i << " {size: " << (int)clusters[i].size() << ", centroid: ";
+        
         if (method_update == 2) {
             out_file << centroids[i]->get_id() << "}" << "\n";
         } else {
             out_file << "[";
+            
             for (int j = 0; j < centroids[i]->get_length(); ++j) {
                 out_file << "(";
+            
                 for (int k = 0; k < dim - 1; ++k) {
                     out_file << centroids[i]->get_coord_point(k,j) << ", ";
                 }
+                
                 out_file << centroids[i]->get_coord_point(dim-1,j);
+                
                 if (j == centroids[i]->get_length() - 1) {
                     out_file << ")";
                 } else {
                     out_file << "), ";
                 }
             }
+
             out_file << "]}\n";
         }
     }
     
     out_file << "clustering_time: " << time << "\n";
     out_file << "Silhouette: [";
+    
     double avg_s = 0;
-    for (int i = 0; i < silhouette_cluster.size(); ++i) {
+
+    for (int i = 0; i < (int)silhouette_cluster.size(); ++i) {
         avg_s += silhouette_cluster[i];
         out_file << silhouette_cluster[i] << ",";
     }
-    avg_s /= silhouette_cluster.size();
+    
+    avg_s /= (int)silhouette_cluster.size();
     out_file << avg_s << "]" << "\n";
     
     if (strlen(complete)) {
-        for (int i = 0; i < clusters.size(); ++i) {
+        for (int i = 0; i < (int)clusters.size(); ++i) {
             out_file << "CLUSTER-" << i << " {";
-            for (int j = 0; j < clusters[i].size() - 1; ++j) {
+            
+            for (int j = 0; j < (int)clusters[i].size() - 1; ++j) {
                 out_file << clusters[i][j] << ",";
             }
-            out_file << clusters[i][clusters[i].size()-1] << "}\n";
+            
+            out_file << clusters[i][(int)clusters[i].size()-1] << "}\n";
         }
     }
+    
     out_file.close();
 }

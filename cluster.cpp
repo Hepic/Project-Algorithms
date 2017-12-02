@@ -19,10 +19,12 @@ void clustering(const vector<HashTable> &hashtables, double delta, vector<double
     } else if (method_init == 2) {
         k_random_selection(centroids, input_curves.size());
     }
+    
     cout << "initialization ended" << endl;
     
     do {
         value = loyd_assignment(centroids, clusters);
+        
         if (method_update == 1) {
             check = mean_frechet_update(centroids, clusters);
         } else if (method_update == 2) {
@@ -30,7 +32,7 @@ void clustering(const vector<HashTable> &hashtables, double delta, vector<double
         }
     } while(check);
     
-     silhouette(centroids, clusters, silhouette_cluster);
+    silhouette(centroids, clusters, silhouette_cluster);
     
     cout << "value = " << value << endl;
 
