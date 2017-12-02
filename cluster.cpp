@@ -32,8 +32,7 @@ void clustering(const vector<HashTable> &hashtables, double delta, vector<double
         }
     } while(check);
     
-    silhouette(centroids, clusters, silhouette_cluster);
-    
+    silhouette(centroids, clusters, silhouette_cluster); 
     cout << "value = " << value << endl;
 
     for (int i = 0; i < (int)input_curves.size(); ++i) {
@@ -44,7 +43,6 @@ void clustering(const vector<HashTable> &hashtables, double delta, vector<double
 }
 
 void silhouette(const vector<const Curve*> &centroids, vector<vector<int> > &clusters, vector<double> &silhouette_cluster) {
-    double min_s = -1, max_s = -1;
     vector<double> close_dist((int)input_curves.size(), -1), close_dist_sec((int)input_curves.size(), -1);
     
     for (int i = 0; i < (int)input_curves.size(); ++i) {
@@ -71,10 +69,9 @@ void silhouette(const vector<const Curve*> &centroids, vector<vector<int> > &clu
             res += s_elem;
         }
         
-        res = (double)(res/clusters[i].size());
+        res = (double)(res / (int)clusters[i].size());
         cout << "res:" << res << endl;
+
         silhouette_cluster[i] = res;
-        min_s = (min_s == -1 ? res : min(min_s, res));
-        max_s = (max_s == -1 ? res : max(max_s, res));
     }
 }

@@ -80,6 +80,7 @@ void read_configuration_file(const char *file_name) {
         }
         
         file >> str;
+
         if (str == "number_of_clusters:") {
             file >> num_of_clusters;
         } else if (str == "number_of_grid_curves:") {
@@ -88,10 +89,11 @@ void read_configuration_file(const char *file_name) {
             file >> global_L;
         }
     }
+
     file.close();
 }
 
-void print_file(const char *file_name,const char *metric, vector<double> &silhouette_cluster, double time, vector<const Curve*> &centroids, vector<vector<int> > &clusters, int dim, const char *complete) {
+void print_file(const char *file_name, const char *metric, const vector<double> &silhouette_cluster, double time, const vector<const Curve*> &centroids, const vector<vector<int> > &clusters, int dim, const char *complete) {
     ofstream out_file(file_name);
     
     out_file << "I" << method_init << "A" << method_assign << "U" << method_update << "\n";
@@ -108,11 +110,13 @@ void print_file(const char *file_name,const char *metric, vector<double> &silhou
             for (int j = 0; j < centroids[i]->get_length(); ++j) {
                 out_file << "(";
             
-                for (int k = 0; k < dim - 1; ++k) {
-                    out_file << centroids[i]->get_coord_point(k,j) << ", ";
+                for (int k = 0; k < dim; ++k) {
+                    out_file << centroids[i]->get_coord_point(k, j);
+
+                    if (k < dim - 1) {
+                        out_file << ", ";
+                    }
                 }
-                
-                out_file << centroids[i]->get_coord_point(dim-1,j);
                 
                 if (j == centroids[i]->get_length() - 1) {
                     out_file << ")";
@@ -132,7 +136,7 @@ void print_file(const char *file_name,const char *metric, vector<double> &silhou
 
     for (int i = 0; i < (int)silhouette_cluster.size(); ++i) {
         avg_s += silhouette_cluster[i];
-        out_file << silhouette_cluster[i] << ",";
+        out_file << silhouette_cluster[i] << ", ";
     }
     
     avg_s /= (int)silhouette_cluster.size();
@@ -143,10 +147,10 @@ void print_file(const char *file_name,const char *metric, vector<double> &silhou
             out_file << "CLUSTER-" << i << " {";
             
             for (int j = 0; j < (int)clusters[i].size() - 1; ++j) {
-                out_file << clusters[i][j] << ",";
+                out_file << clusters[i][j] << ", ";
             }
             
-            out_file << clusters[i][(int)clusters[i].size()-1] << "}\n";
+            out_file << clusters[i][(int)clusters[i].size() - 1] << "}\n";
         }
     }
     

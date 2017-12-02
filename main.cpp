@@ -12,7 +12,7 @@ using namespace std;
 
 int method_init = 1;
 int method_assign = 1;
-int method_update = 1;
+int method_update = 2;
 
 int main(int argc, const char *argv[]) {
     ios::sync_with_stdio(false);
@@ -32,7 +32,7 @@ int main(int argc, const char *argv[]) {
     double delta = 0.2;
     read_file(input_file, dim);
     read_configuration_file(conf_file);  
-    cout << "read" << endl;
+    cout << "read " << endl;
 
     clock_t begin = clock();
 
