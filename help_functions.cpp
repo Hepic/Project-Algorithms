@@ -95,7 +95,7 @@ void search_curves_from_hashtables(const vector<HashTable> &hashtables, double d
             hashtables[j].search(closer_curves, *centroids[i], concat_curve, hash_function, dist_function, R, visited, check);
             
             if (!closer_curves.empty()) {
-                for (int k = 0; global_k < (int)closer_curves.size(); ++k) {
+                for (int k = 0; k < (int)closer_curves.size(); ++k) {
                     R_closest_curves[i].insert(closer_curves[k]);
                 }
             }
