@@ -79,8 +79,6 @@ bool mean_frechet_update(vector<const Curve*> &centroids, const vector<vector<in
         BinaryMeanTree tree(clusters[i]);
         const Curve *mean_curve = tree.get_mean();
         
-        mean_curve->print_curve();
-
         if (!centroids[i]->equal_curves(*mean_curve)) {
             centroids[i] = mean_curve;
             check = true;
