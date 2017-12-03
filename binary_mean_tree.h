@@ -16,6 +16,8 @@ class BinaryMeanTree {
 
     public:
         BinaryMeanTree(const vector<int>&);
+        ~BinaryMeanTree();
+        void Destroy_Tree(Node*);
         void build_tree(Node*, int, int, const vector<int>&);
         const Curve* get_mean() const;
 };
