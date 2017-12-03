@@ -33,10 +33,10 @@ void clustering(const vector<HashTable> &hashtables, double delta, vector<double
         }
     } while(check);
     
-    silhouette(centroids, clusters, silhouette_cluster); 
+    silhouette(centroids, clusters, silhouette_cluster, metric); 
 }
 
-void silhouette(const vector<const Curve*> &centroids, vector<vector<int> > &clusters, vector<double> &silhouette_cluster, char *metric) {
+void silhouette(const vector<const Curve*> &centroids, vector<vector<int> > &clusters, vector<double> &silhouette_cluster, const char *metric) {
     vector<double> close_dist((int)input_curves.size(), -1), close_dist_sec((int)input_curves.size(), -1);
     
     for (int i = 0; i < (int)input_curves.size(); ++i) {

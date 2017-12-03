@@ -8,6 +8,6 @@
 using namespace std;
 
 void clustering(const vector<HashTable> &hashtables, double, vector<double>&, vector<const Curve*> &centroids, vector<vector<int> >&, const char*);
-void silhouette(const vector<const Curve*> &centroids, vector<vector<int> >&, vector<double>&);
+void silhouette(const vector<const Curve*> &centroids, vector<vector<int> >&, vector<double>&, const char*);
 
 #endif
