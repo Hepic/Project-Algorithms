@@ -7,7 +7,7 @@
 
 using namespace std;
 
-void clustering(const vector<HashTable> &hashtables, double, vector<double>&, vector<const Curve*> &centroids, vector<vector<int> >&);
-void silhouette(const vector<const Curve*> &centroids, vector<vector<int> >&, vector<double>&);
+void clustering(const vector<HashTable> &hashtables, double, vector<double>&, vector<const Curve*> &centroids, vector<vector<int> >&, char*);
+void silhouette(const vector<const Curve*> &centroids, vector<vector<int> >&, vector<double>&, char*);
 
 #endif

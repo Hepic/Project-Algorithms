@@ -9,13 +9,13 @@
 #include "assignment.h"
 #include "update.h"
 
-void clustering(const vector<HashTable> &hashtables, double delta, vector<double> &silhouette_cluster, vector<const Curve*> &centroids, vector<vector<int> > &clusters) {
+void clustering(const vector<HashTable> &hashtables, double delta, vector<double> &silhouette_cluster, vector<const Curve*> &centroids, vector<vector<int> > &clusters, char *metric) {
     vector<int> assignment(input_curves.size());
     bool check;
     double value;
 
     if (method_init == 1) {
-        k_means_pp(centroids, input_curves.size(), "DFT");
+        k_means_pp(centroids, input_curves.size(), metric);
     } else if (method_init == 2) {
         k_random_selection(centroids, input_curves.size());
     }
@@ -23,16 +23,20 @@ void clustering(const vector<HashTable> &hashtables, double delta, vector<double
     cout << "initialization ended" << endl;
     
     do {
-        value = loyd_assignment(centroids, clusters);
+        if (method_assign == 1) {
+            value = range_search(hashtables, centroids, clusters, delta, metric);
+        } else if (method_assign == 2) {
+            value = loyd_assignment(centroids, clusters, metric);
+        }
         
         if (method_update == 1) {
             check = mean_frechet_update(centroids, clusters);
         } else if (method_update == 2) {
-            check = PAM_update(centroids, value, clusters);
+            check = PAM_update(centroids, value, clusters, metric);
         }
     } while(check);
     
-    silhouette(centroids, clusters, silhouette_cluster); 
+    silhouette(centroids, clusters, silhouette_cluster, metric);
     cout << "value = " << value << endl;
 
     for (int i = 0; i < (int)input_curves.size(); ++i) {
@@ -42,12 +46,12 @@ void clustering(const vector<HashTable> &hashtables, double delta, vector<double
     cout << endl;
 }
 
-void silhouette(const vector<const Curve*> &centroids, vector<vector<int> > &clusters, vector<double> &silhouette_cluster) {
+void silhouette(const vector<const Curve*> &centroids, vector<vector<int> > &clusters, vector<double> &silhouette_cluster, char *metric) {
     vector<double> close_dist((int)input_curves.size(), -1), close_dist_sec((int)input_curves.size(), -1);
     
     for (int i = 0; i < (int)input_curves.size(); ++i) {
         for (int j = 0; j < (int)centroids.size(); ++j) {
-            double dist = compute_distance(input_curves[i], *centroids[j], "DFT");
+            double dist = compute_distance(input_curves[i], *centroids[j], metric);
             
             if (close_dist[i] == -1 || dist < close_dist[i]) {
                 close_dist_sec[i] = close_dist[i];
@@ -70,7 +74,6 @@ void silhouette(const vector<const Curve*> &centroids, vector<vector<int> > &clu
         }
         
         res = (double)(res / (int)clusters[i].size());
-        cout << "res:" << res << endl;
 
         silhouette_cluster[i] = res;
     }

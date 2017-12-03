@@ -7,7 +7,7 @@
 
 using namespace std;
 
-bool PAM_update(vector<const Curve*>&, double, const vector<vector<int> >&);
+bool PAM_update(vector<const Curve*>&, double, const vector<vector<int> >&, char*);
 bool mean_frechet_update(vector<const Curve*>&, const vector<vector<int> >&);
 
 #endif

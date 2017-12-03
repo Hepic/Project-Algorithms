@@ -7,7 +7,7 @@
 #include "binary_mean_tree.h"
 #include "update.h"
 
-double swap_update_centroid(const vector<const Curve*> &centroids, int old_centr, int new_centr, const vector<int> &assign, const vector<double> &close_dist, const vector<double> &close_dist_sec) {
+double swap_update_centroid(const vector<const Curve*> &centroids, int old_centr, int new_centr, const vector<int> &assign, const vector<double> &close_dist, const vector<double> &close_dist_sec, char *metric) {
     double value = 0;
     
     for (int i = 0; i < (int)assign.size(); ++i) {
@@ -15,7 +15,7 @@ double swap_update_centroid(const vector<const Curve*> &centroids, int old_centr
             continue;
         }
         
-        double dist = compute_distance(input_curves[i], input_curves[new_centr], "DFT");
+        double dist = compute_distance(input_curves[i], input_curves[new_centr], metric);
         
         if (centroids[assign[i]]->get_int_id() != old_centr) {
             value += min(dist, close_dist[i]);
@@ -27,7 +27,7 @@ double swap_update_centroid(const vector<const Curve*> &centroids, int old_centr
     return value;
 }
 
-bool PAM_update(vector<const Curve*> &centroids, double value, const vector<vector<int> > &clusters) {
+bool PAM_update(vector<const Curve*> &centroids, double value, const vector<vector<int> > &clusters, char *metric) {
     vector<double> close_dist((int)input_curves.size(), -1), close_dist_sec((int)input_curves.size(), -1);
     vector<int> assign((int)input_curves.size());
     
@@ -36,7 +36,7 @@ bool PAM_update(vector<const Curve*> &centroids, double value, const vector<vect
     
     for (int i = 0; i < (int)input_curves.size(); ++i) {
         for (int j = 0; j < (int)centroids.size(); ++j) {
-            double dist = compute_distance(input_curves[i], *centroids[j], "DFT");
+            double dist = compute_distance(input_curves[i], *centroids[j], metric);
             
             if (close_dist[i] == -1 || dist < close_dist[i]) {
                 close_dist_sec[i] = close_dist[i];
@@ -54,7 +54,7 @@ bool PAM_update(vector<const Curve*> &centroids, double value, const vector<vect
                 continue;
             }
             
-            double new_value = swap_update_centroid(centroids, centroids[i]->get_int_id(), clusters[i][j], assign, close_dist, close_dist_sec);
+            double new_value = swap_update_centroid(centroids, centroids[i]->get_int_id(), clusters[i][j], assign, close_dist, close_dist_sec, metric);
             
             if (new_value < min_value) {
                 min_value = new_value;

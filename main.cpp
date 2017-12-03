@@ -10,9 +10,9 @@
 
 using namespace std;
 
-int method_init = 1;
-int method_assign = 1;
-int method_update = 2;
+int method_init;
+int method_assign;
+int method_update;
 
 int main(int argc, const char *argv[]) {
     ios::sync_with_stdio(false);
@@ -23,8 +23,11 @@ int main(int argc, const char *argv[]) {
     char *output_file = get_arguments(argv, argc, "-o");
     char *metric = get_arguments(argv, argc, "-d");
     char *complete = get_arguments(argv, argc, "-complete", true);
+    method_init = atoi(get_arguments(argv, argc, "-init"));
+    method_assign = atoi(get_arguments(argv, argc, "-assign"));
+    method_update = atoi(get_arguments(argv, argc, "-update"));
     
-    num_of_clusters = 3;
+    //num_of_clusters = 3;
     global_k = 2;
     global_L = 3;
     
@@ -69,7 +72,7 @@ int main(int argc, const char *argv[]) {
     vector<double> silhouette_cluster(num_of_clusters);
     
     insert_curves_into_hashtables(hashtables, delta, "classic");
-    clustering(hashtables, delta, silhouette_cluster, centroids, clusters);
+    clustering(hashtables, delta, silhouette_cluster, centroids, clusters, metric);
     
     clock_t end = clock();
     double elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
