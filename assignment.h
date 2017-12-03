@@ -7,7 +7,7 @@
 
 using namespace std;
 
-double loyd_assignment(const vector<const Curve*>&, vector<vector<int> >&, char*);
-double range_search(const vector<HashTable>&, const vector<const Curve*>&, vector<vector<int> >&, double, char*);
+double loyd_assignment(const vector<const Curve*>&, vector<vector<int> >&, const char*);
+double range_search(const vector<HashTable>&, const vector<const Curve*>&, vector<vector<int> >&, double, const char*);
 
 #endif

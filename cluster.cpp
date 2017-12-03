@@ -9,8 +9,7 @@
 #include "assignment.h"
 #include "update.h"
 
-void clustering(const vector<HashTable> &hashtables, double delta, vector<double> &silhouette_cluster, vector<const Curve*> &centroids, vector<vector<int> > &clusters, char *metric) {
-    vector<int> assignment(input_curves.size());
+void clustering(const vector<HashTable> &hashtables, double delta, vector<double> &silhouette_cluster, vector<const Curve*> &centroids, vector<vector<int> > &clusters, const char *metric) {
     bool check;
     double value;
 
@@ -20,13 +19,11 @@ void clustering(const vector<HashTable> &hashtables, double delta, vector<double
         k_random_selection(centroids, input_curves.size());
     }
     
-    cout << "initialization ended" << endl;
-    
     do {
         if (method_assign == 1) {
-            value = range_search(hashtables, centroids, clusters, delta, metric);
-        } else if (method_assign == 2) {
             value = loyd_assignment(centroids, clusters, metric);
+        } else if (method_assign == 2) {
+            value = range_search(hashtables, centroids, clusters, delta, metric);
         }
         
         if (method_update == 1) {
@@ -36,14 +33,7 @@ void clustering(const vector<HashTable> &hashtables, double delta, vector<double
         }
     } while(check);
     
-    silhouette(centroids, clusters, silhouette_cluster, metric);
-    cout << "value = " << value << endl;
-
-    for (int i = 0; i < (int)input_curves.size(); ++i) {
-        cout << assignment[i] << " ";
-    }
-
-    cout << endl;
+    silhouette(centroids, clusters, silhouette_cluster); 
 }
 
 void silhouette(const vector<const Curve*> &centroids, vector<vector<int> > &clusters, vector<double> &silhouette_cluster, char *metric) {
@@ -74,7 +64,6 @@ void silhouette(const vector<const Curve*> &centroids, vector<vector<int> > &clu
         }
         
         res = (double)(res / (int)clusters[i].size());
-
         silhouette_cluster[i] = res;
     }
 }

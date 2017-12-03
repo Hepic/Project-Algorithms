@@ -6,7 +6,7 @@
 #include "help_functions.h"
 #include "assignment.h"
 
-double loyd_assignment(const vector<const Curve*> &centroids, vector<vector<int> > &clusters, char *metric) {
+double loyd_assignment(const vector<const Curve*> &centroids, vector<vector<int> > &clusters, const char *metric) {
     double min_dist, dist, value = 0;
     int p_centr;
     
@@ -33,7 +33,7 @@ double loyd_assignment(const vector<const Curve*> &centroids, vector<vector<int>
     return value;
 }
 
-double range_search(const vector<HashTable> &hashtables, const vector<const Curve*> &centroids, vector<vector<int> > &clusters, double delta, char *metric) {
+double range_search(const vector<HashTable> &hashtables, const vector<const Curve*> &centroids, vector<vector<int> > &clusters, double delta, const char *metric) {
     vector<int> assignment((int)input_curves.size(), -1);
     vector<set<Curve> > R_closest_curves((int)centroids.size());
     vector<bool> grid_curves_found((int)centroids.size(), false), visited((int)input_curves.size(), false);
@@ -54,7 +54,7 @@ double range_search(const vector<HashTable> &hashtables, const vector<const Curv
     }
     
     double R = minim / 2.0;
-    
+
     while (1) {
         general_search(hashtables, delta, R, "classic", metric, R_closest_curves, centroids, grid_curves_found, visited);
         bool found = false;

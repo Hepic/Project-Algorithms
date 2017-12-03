@@ -21,7 +21,7 @@ void k_random_selection(vector<const Curve*> &centroids, int len) {
     }
 }
 
-void k_means_pp(vector<const Curve*> &centroids, int len, const char *dist_func) {
+void k_means_pp(vector<const Curve*> &centroids, int len, const char *metric) {
     vector<double> min_distance(len, -1);
     vector<bool> is_centroid(len, false);
     int pos;
@@ -46,7 +46,7 @@ void k_means_pp(vector<const Curve*> &centroids, int len, const char *dist_func)
                 continue;
             }
             
-            double dist = compute_distance(input_curves[i], input_curves[pos], dist_func);
+            double dist = compute_distance(input_curves[i], input_curves[pos], metric);
             
             if (min_distance[i] == -1 || dist < min_distance[i]) {
                 if (min_distance[i] != -1) {
