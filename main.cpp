@@ -27,13 +27,15 @@ int main(int argc, const char *argv[]) {
     method_assign = atoi(get_arguments(argv, argc, "-assign"));
     method_update = atoi(get_arguments(argv, argc, "-update"));
     
-    num_of_clusters = 2;
+    
+    num_of_clusters = 3;
     global_k = 2;
     global_L = 3;
     
     int dim = 2; 
     double delta = 0.2;
     read_file(input_file, dim);
+
     read_configuration_file(conf_file);
 
     mem_distance = new double*[(int)input_curves.size()];

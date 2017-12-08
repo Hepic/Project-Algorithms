@@ -9,6 +9,26 @@ BinaryMeanTree::BinaryMeanTree(const vector<int> &cluster) {
     build_tree(head, 0, height, cluster);
 }
 
+BinaryMeanTree::~BinaryMeanTree() {
+    Node *ptr = this->head;
+    //delete head;
+    if (ptr != NULL) {
+        Destroy_Tree(ptr);
+    }
+}
+
+void BinaryMeanTree::Destroy_Tree(Node *ptr) {
+    if (ptr) {
+        if (ptr->left != NULL) {
+            Destroy_Tree(ptr->left);
+        }
+        if (ptr->right != NULL) {
+            Destroy_Tree(ptr->right);
+        }
+        delete ptr;
+    }
+}
+
 void BinaryMeanTree::build_tree(Node *node, int curr, int height, const vector<int> &cluster) { 
     if (curr < height) {
         node->left = new Node;
